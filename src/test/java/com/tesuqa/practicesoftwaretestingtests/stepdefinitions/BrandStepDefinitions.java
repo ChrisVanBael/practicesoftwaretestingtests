@@ -1,5 +1,6 @@
 package com.tesuqa.practicesoftwaretestingtests.stepdefinitions;
 
+import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api.AddBrand;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api.DeleteBrand;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
@@ -9,13 +10,14 @@ import net.serenitybdd.core.environment.EnvironmentSpecificConfiguration;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.actors.OnStage;
 import net.serenitybdd.screenplay.actors.OnlineCast;
+import net.serenitybdd.screenplay.ensure.Ensure;
 import net.thucydides.core.util.EnvironmentVariables;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseBrandsApi;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheBrandNames;
 
 import java.util.List;
 
-public class BrandsStepDefinitions {
+public class BrandStepDefinitions {
 
     private EnvironmentVariables environmentVariables;
     private Actor apiActor;
@@ -32,14 +34,12 @@ public class BrandsStepDefinitions {
      * Verifies the brand name doesn't exist yet. If it exists, deletes it
      * @param brandName name of the brand
      */
-    @Given("the {string} is not entered yet")
+    @Given("the {string} brand is not entered yet")
     public void assureBrandNotEntered(String brandName) {
         List<String> allBrandNames = apiActor.asksFor(TheBrandNames.knownByTheSystem());
-        System.out.println("Before delete: " + allBrandNames);
         if (allBrandNames.contains(brandName)) {
             apiActor.attemptsTo(DeleteBrand.withName(brandName));
         }
-        System.out.println("After delete: " + allBrandNames);
     }
 
     /**
@@ -49,17 +49,17 @@ public class BrandsStepDefinitions {
      */
     @When("I add brand with name {string} and slug {string}")
     public void addBrand(String brandName, String brandSlug) {
-        //apiActor.attemptsTo();
-
+        apiActor.attemptsTo(AddBrand.withNameAndSlug(brandName, brandSlug));
     }
 
     /**
      * Verifies that the brand is in the system
-     * @param brandName
+     * @param brandName the name of the brand
      */
-    @Then("the {string} is available for use with {string}")
-    public void verifyBrandAvailable(String brandName, String brandSlug) {
-        
+    @Then("the {string} brand is available")
+    public void verifyBrandAvailable(String brandName) {
+        List<String> allBrandNames = apiActor.asksFor(TheBrandNames.knownByTheSystem());
+        apiActor.attemptsTo(Ensure.that(brandName).isIn(allBrandNames));
     }
 
 

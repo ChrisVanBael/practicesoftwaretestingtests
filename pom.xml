@@ -17,6 +17,20 @@
         <api.base.url></api.base.url>
         <webdriver.base.url></webdriver.base.url>
     </properties>
+
+    <repositories>
+        <repository>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </releases>
+            <id>tesuqa-repo</id>
+            <name>tesuqa</name>
+            <url>https://maven.tesuqa.com</url>
+            <layout>default</layout>
+        </repository>
+    </repositories>
     <dependencies>
         <dependency>
             <groupId>com.practicesoftwaretesting</groupId>
