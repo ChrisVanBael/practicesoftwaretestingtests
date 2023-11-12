@@ -2,7 +2,7 @@ package com.tesuqa.practicesoftwaretestingtests.pages;
 
 import net.serenitybdd.core.pages.PageObject;
 import net.serenitybdd.screenplay.targets.Target;
-import net.thucydides.core.annotations.DefaultUrl;
+import net.serenitybdd.annotations.DefaultUrl;
 
 public class Menu extends PageObject {
 

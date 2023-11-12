@@ -2,7 +2,7 @@ package com.tesuqa.practicesoftwaretestingtests.pages;
 
 import net.serenitybdd.core.pages.PageObject;
 import net.serenitybdd.screenplay.targets.Target;
-import net.thucydides.core.annotations.DefaultUrl;
+import net.serenitybdd.annotations.DefaultUrl;
 
 @DefaultUrl("https://v1.practicesoftwaretesting.com/#/contact")
 public class ContactPage extends PageObject {
