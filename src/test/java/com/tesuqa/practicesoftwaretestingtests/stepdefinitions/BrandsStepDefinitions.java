@@ -1,5 +1,6 @@
 package com.tesuqa.practicesoftwaretestingtests.stepdefinitions;
 
+import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api.AddBrand;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api.DeleteBrand;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
@@ -9,6 +10,7 @@ import net.serenitybdd.core.environment.EnvironmentSpecificConfiguration;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.actors.OnStage;
 import net.serenitybdd.screenplay.actors.OnlineCast;
+import net.serenitybdd.screenplay.ensure.Ensure;
 import net.thucydides.core.util.EnvironmentVariables;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseBrandsApi;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheBrandNames;
@@ -49,17 +51,17 @@ public class BrandsStepDefinitions {
      */
     @When("I add brand with name {string} and slug {string}")
     public void addBrand(String brandName, String brandSlug) {
-        //apiActor.attemptsTo();
-
+        apiActor.attemptsTo(AddBrand.withNameAndSlug(brandName, brandSlug));
     }
 
     /**
      * Verifies that the brand is in the system
-     * @param brandName
+     * @param brandName the name of the brand
      */
-    @Then("the {string} is available for use with {string}")
-    public void verifyBrandAvailable(String brandName, String brandSlug) {
-        
+    @Then("the {string} brand is available")
+    public void verifyBrandAvailable(String brandName) {
+        List<String> allBrandNames = apiActor.asksFor(TheBrandNames.knownByTheSystem());
+        apiActor.attemptsTo(Ensure.that(brandName).isIn(allBrandNames));
     }
 
 
