@@ -1,6 +1,6 @@
 Feature: Add and find a product
 
-  Scenario:
+  Scenario: Verify a created product is displayed
     Given following product is not entered yet
       | Product   | Description             | Price     | Category   | Brand        | Imageid |
       | testprod  | dit is een test product | 3.95      | Hand Tools | Brand name 1 | 1       |

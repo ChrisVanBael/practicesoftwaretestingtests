@@ -25,6 +25,7 @@ import net.serenitybdd.screenplay.actors.OnStage;
 import net.serenitybdd.screenplay.actors.OnlineCast;
 import net.serenitybdd.screenplay.ensure.Ensure;
 import net.thucydides.model.util.EnvironmentVariables;
+import org.openqa.selenium.WebDriver;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -36,6 +37,7 @@ public class ProductStepDefinitions {
 
     private EnvironmentVariables environmentVariables;
     private Actor myActor;
+    private WebDriver browser;
 
     @Before
     public void setTheStage() {
@@ -46,7 +48,7 @@ public class ProductStepDefinitions {
         myActor.whoCan(UseProductsApi.at(theRestApiBaseUrl));
         myActor.whoCan(UseBrandsApi.at(theRestApiBaseUrl));
         myActor.whoCan(UseCategoriesApi.at(theRestApiBaseUrl));
-        myActor.whoCan(BrowseTheWeb.as(myActor));
+        myActor.whoCan(BrowseTheWeb.with(browser));
     }
 
     /**
