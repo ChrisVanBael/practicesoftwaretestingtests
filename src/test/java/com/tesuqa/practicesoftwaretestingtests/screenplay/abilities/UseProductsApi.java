@@ -3,11 +3,13 @@ package com.tesuqa.practicesoftwaretestingtests.screenplay.abilities;
 import com.practicesoftwaretesting.client.ApiClient;
 import com.practicesoftwaretesting.client.ApiException;
 import com.practicesoftwaretesting.client.api.ProductApi;
+import com.practicesoftwaretesting.client.model.InlineResponse2001;
 import com.practicesoftwaretesting.client.model.ProductRequest;
 import com.practicesoftwaretesting.client.model.ProductResponse;
 import net.serenitybdd.screenplay.Ability;
 import net.serenitybdd.screenplay.Actor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -47,12 +49,17 @@ public class UseProductsApi implements Ability {
     }
 
     public List<ProductResponse> getAllProducts(Integer brandId, Integer categoryId, String isRental) {
-        try {
-            return productApi.getProducts(brandId, categoryId, isRental);
-        } catch (ApiException e) {
-            e.printStackTrace();
-            return null;
-        }
+        Integer lastPage = 0;
+        List<ProductResponse> products = new ArrayList<>();
+        for (Integer page = lastPage; page <= lastPage; page++)
+            try {
+                InlineResponse2001 response = productApi.getProducts(brandId, categoryId, isRental, page);
+                //TODO fix: lastPage = response.
+            } catch (ApiException e) {
+                e.printStackTrace();
+                return null;
+            }
+
     }
 
     public void createProduct(ProductRequest product) {
