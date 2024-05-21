@@ -16,7 +16,7 @@ public class DeleteCategory {
     public static Performable withName(String name) {
         return Task.where(
                 actor -> {
-                    Integer id = UseCategoriesApi.as(actor).getAllCategories()
+                    String id = UseCategoriesApi.as(actor).getAllCategories()
                             .stream()
                             .filter(categoryResponse -> categoryResponse.getName().equals(name))
                             .map(CategoryResponse::getId)

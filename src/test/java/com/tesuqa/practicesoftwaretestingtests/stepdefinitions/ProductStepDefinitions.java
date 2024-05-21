@@ -63,7 +63,7 @@ public class ProductStepDefinitions {
      */
     @Given("the {string} product is not entered yet for {string}")
     public void assureProductNotEntered(String productName, String brandName) {
-        Integer brandId = myActor.asksFor(TheId.ofBrand(brandName));
+        String brandId = myActor.asksFor(TheId.ofBrand(brandName));
         List<String> allProductNames = myActor.asksFor(TheProducts.ofBrand(brandId))
                 .stream()
                 .map(ProductResponse::getName)

@@ -18,4 +18,16 @@ public class TheBrands {
                         actor -> UseBrandsApi.as(actor).getAllBrands()
                 );
     }
+
+    /**
+     * Returns a list of Brands where the name partially or fully matches the query
+     * @param query part of the name of the Brand
+     * @return list of BrandResponses
+     */
+    public static Question<List<BrandResponse>> foundWithQuery(String query) {
+        return Question.about("the brands found with query: " +  query)
+            .answeredBy(
+                actor -> UseBrandsApi.as(actor).searchBrand(query)
+            );
+    }
 }

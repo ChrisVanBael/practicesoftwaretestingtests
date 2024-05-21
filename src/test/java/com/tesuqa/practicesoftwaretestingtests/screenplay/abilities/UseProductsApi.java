@@ -3,11 +3,13 @@ package com.tesuqa.practicesoftwaretestingtests.screenplay.abilities;
 import com.practicesoftwaretesting.client.ApiClient;
 import com.practicesoftwaretesting.client.ApiException;
 import com.practicesoftwaretesting.client.api.ProductApi;
+import com.practicesoftwaretesting.client.model.InlineResponse2005;
 import com.practicesoftwaretesting.client.model.ProductRequest;
 import com.practicesoftwaretesting.client.model.ProductResponse;
 import net.serenitybdd.screenplay.Ability;
 import net.serenitybdd.screenplay.Actor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -46,13 +48,21 @@ public class UseProductsApi implements Ability {
         return "call the Products API at "+ baseUrl;
     }
 
-    public List<ProductResponse> getAllProducts(Integer brandId, Integer categoryId, String isRental) {
-        try {
-            return productApi.getProducts(brandId, categoryId, isRental);
-        } catch (ApiException e) {
-            e.printStackTrace();
-            return null;
+    public List<ProductResponse> getAllProducts(String brandId, String categoryId, String isRental, String priceRange, String sort) {
+        List<ProductResponse> products = new ArrayList<>();
+        Integer lastPage = 0;
+
+        for (Integer page=0; page<=lastPage; page++) {
+            try {
+                InlineResponse2005 productResp = productApi.getProducts(brandId, categoryId, isRental, priceRange, sort, page);
+                lastPage = productResp.getLastPage();
+                products.addAll(productResp.getData());
+            } catch (ApiException e) {
+                e.printStackTrace();
+                return null;
+            }
         }
+        return products;
     }
 
     public void createProduct(ProductRequest product) {
@@ -63,7 +73,7 @@ public class UseProductsApi implements Ability {
         }
     }
 
-    public void updateProduct(ProductRequest product, Integer productId ) {
+    public void updateProduct(ProductRequest product, String productId ) {
         try {
             productApi.updateProduct(product, productId);
         } catch (ApiException e) {
@@ -71,7 +81,7 @@ public class UseProductsApi implements Ability {
         }
     }
 
-    public ProductResponse getProduct(Integer productId) {
+    public ProductResponse getProduct(String productId) {
         try {
             return productApi.getProduct(productId);
         } catch (ApiException e) {
@@ -80,7 +90,7 @@ public class UseProductsApi implements Ability {
         }
     }
 
-    public void deleteProduct(Integer productId) {
+    public void deleteProduct(String productId) {
         try {
             productApi.deleteProduct(productId);
         } catch (ApiException e) {
@@ -88,13 +98,30 @@ public class UseProductsApi implements Ability {
         }
     }
 
-    public List<ProductResponse> getRelatedProducts(Integer productId) {
+    public List<ProductResponse> getRelatedProducts(String productId) {
         try {
             return productApi.getRelatedProducts(productId);
         } catch (ApiException e) {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public List<ProductResponse> search(String query) {
+        List<ProductResponse> products = new ArrayList<>();
+        Integer lastPage = 0;
+
+        for (Integer page=0; page<=lastPage; page++) {
+            try {
+                InlineResponse2005 productResp = productApi.searchProduct(query, page);
+                lastPage = productResp.getLastPage();
+                products.addAll(productResp.getData());
+            } catch (ApiException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        return products;
     }
 
 }
