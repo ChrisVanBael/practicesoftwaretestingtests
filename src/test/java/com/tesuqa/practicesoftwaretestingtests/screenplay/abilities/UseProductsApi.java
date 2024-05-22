@@ -53,13 +53,14 @@ public class UseProductsApi implements Ability {
         List<ProductResponse> products = new ArrayList<>();
         for (Integer page = lastPage; page <= lastPage; page++)
             try {
-                InlineResponse2001 response = productApi.getProducts(brandId, categoryId, isRental, page);
-                //TODO fix: lastPage = response.
+                InlineResponse2001 productResp = productApi.getProducts(brandId, categoryId, isRental, page);
+                lastPage = productResp.getLastPage();
+                products.addAll(productResp.getData());
             } catch (ApiException e) {
                 e.printStackTrace();
                 return null;
             }
-
+        return products;
     }
 
     public void createProduct(ProductRequest product) {
@@ -102,6 +103,23 @@ public class UseProductsApi implements Ability {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public List<ProductResponse> search(String query) {
+        List<ProductResponse> products = new ArrayList<>();
+        Integer lastPage = 0;
+
+        for (Integer page=0; page<=lastPage; page++) {
+            try {
+                InlineResponse2001 productResp = productApi.searchProduct(query, page);
+                lastPage = productResp.getLastPage();
+                products.addAll(productResp.getData());
+            } catch (ApiException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        return products;
     }
 
 }

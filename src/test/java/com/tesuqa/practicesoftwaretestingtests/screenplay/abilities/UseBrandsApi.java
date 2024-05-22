@@ -56,11 +56,12 @@ public class UseBrandsApi implements Ability {
         }
     }
 
-    public void createBrand(BrandRequest brand) {
+    public BrandResponse createBrand(BrandRequest brand) {
         try {
-            brandApi.storeBrand(brand);
+            return brandApi.storeBrand(brand);
         } catch (ApiException e) {
             e.printStackTrace();
+            return null;
         }
     }
 
