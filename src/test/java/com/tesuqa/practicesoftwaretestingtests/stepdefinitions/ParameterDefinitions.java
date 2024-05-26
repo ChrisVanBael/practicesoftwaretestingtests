@@ -8,6 +8,8 @@ import net.serenitybdd.screenplay.actors.OnlineCast;
 
 public class ParameterDefinitions {
 
+    private Actor apiActor;
+
     @ParameterType(".*")
     public Actor actor(String actorName) {
         return OnStage.theActorCalled(actorName);
@@ -15,6 +17,6 @@ public class ParameterDefinitions {
 
     @Before
     public void setTheStage() {
-        OnStage.setTheStage(new OnlineCast());
+        apiActor = OnStage.theActorCalled("apiActor");
     }
 }

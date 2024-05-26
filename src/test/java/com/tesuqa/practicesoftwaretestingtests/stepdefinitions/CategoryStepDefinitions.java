@@ -24,7 +24,7 @@ public class CategoryStepDefinitions {
 
     @Before
     public void setTheStage() {
-        OnStage.setTheStage(new OnlineCast());
+        apiActor = OnStage.theActorCalled("apiActor");
         String theRestApiBaseUrl = EnvironmentSpecificConfiguration
                 .from(environmentVariables).getProperty("api.base.url");
         apiActor = Actor.named("ApiActor").whoCan(UseCategoriesApi.at(theRestApiBaseUrl));

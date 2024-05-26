@@ -46,7 +46,7 @@ public class ProductStepDefinitions {
 
     @Before
     public void setTheStage() {
-        OnStage.setTheStage(new OnlineCast());
+        Actor apiActor = OnStage.theActorCalled("apiActor");
         String theRestApiBaseUrl = EnvironmentSpecificConfiguration
                 .from(environmentVariables).getProperty("api.base.url");
         myActor = Actor.named("MyActor");
