@@ -27,7 +27,7 @@ public class CategoryStepDefinitions {
         myActor = OnStage.theActorCalled("myActor");
         String theRestApiBaseUrl = EnvironmentSpecificConfiguration
                 .from(environmentVariables).getProperty("api.base.url");
-        myActor = Actor.named("myActor").whoCan(UseCategoriesApi.at(theRestApiBaseUrl));
+        myActor.whoCan(UseCategoriesApi.at(theRestApiBaseUrl));
     }
 
     /**

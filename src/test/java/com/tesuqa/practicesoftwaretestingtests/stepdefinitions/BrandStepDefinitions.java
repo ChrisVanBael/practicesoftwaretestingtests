@@ -30,7 +30,7 @@ public class BrandStepDefinitions {
         myActor = OnStage.theActorCalled("myActor");
         String theRestApiBaseUrl = EnvironmentSpecificConfiguration
                 .from(environmentVariables).getProperty("api.base.url");
-        myActor = Actor.named("myActor").whoCan(UseBrandsApi.at(theRestApiBaseUrl));
+        myActor.whoCan(UseBrandsApi.at(theRestApiBaseUrl));
     }
 
     /**

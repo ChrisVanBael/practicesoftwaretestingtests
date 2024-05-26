@@ -25,4 +25,18 @@ public class DeleteCategory {
                 }
         );
     }
+
+
+    /**
+     * Deletes the Category with id
+     * @param id id of the category
+     * @return the task
+     */
+    public static Performable withId(Integer id) {
+        return Task.where(
+            actor -> {
+                UseCategoriesApi.as(actor).deleteCategory(id);
+            }
+        );
+    }
 }

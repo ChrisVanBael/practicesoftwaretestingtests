@@ -3,6 +3,7 @@ package com.tesuqa.practicesoftwaretestingtests.screenplay.abilities;
 import com.practicesoftwaretesting.client.ApiClient;
 import com.practicesoftwaretesting.client.ApiException;
 import com.practicesoftwaretesting.client.api.ProductApi;
+import com.practicesoftwaretesting.client.model.InlineResponse201;
 import com.practicesoftwaretesting.client.model.ProductRequest;
 import com.practicesoftwaretesting.client.model.ProductResponse;
 import net.serenitybdd.screenplay.Ability;

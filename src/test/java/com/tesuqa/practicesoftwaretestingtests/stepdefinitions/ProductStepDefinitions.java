@@ -145,12 +145,10 @@ public class ProductStepDefinitions {
         newProduct.setCategoryId(myActor.recall("CategoryId"));
         newProduct.setBrandId(myActor.recall("BrandId"));
         newProduct.setProductImageId(Integer.parseInt(productList.get(3)));
-        myActor.remember("New Product", newProduct);
 
-        // verify the product does not exist yet
         assureProductDoesNotExist(newProduct.getName(), newProduct.getBrandId());
-        // then add it
-        addProductWithRequest();
+        myActor.attemptsTo(AddProduct.withProduct(newProduct));
+        myActor.remember("New Product", newProduct);
     }
 
 
