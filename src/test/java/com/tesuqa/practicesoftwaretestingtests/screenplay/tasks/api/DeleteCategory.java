@@ -32,7 +32,7 @@ public class DeleteCategory {
      * @param id id of the category
      * @return the task
      */
-    public static Performable withId(Integer id) {
+    public static Performable withId(String id) {
         return Task.where(
             actor -> {
                 UseCategoriesApi.as(actor).deleteCategory(id);

@@ -32,7 +32,7 @@ public class DeleteBrand {
      * @param id id of the brand
      * @return the task
      */
-    public static Performable withId(Integer id) {
+    public static Performable withId(String id) {
         return Task.where(
             actor -> {
                 UseBrandsApi.as(actor).deleteBrand(id);

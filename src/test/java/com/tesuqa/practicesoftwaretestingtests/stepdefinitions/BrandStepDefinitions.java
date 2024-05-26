@@ -75,7 +75,7 @@ public class BrandStepDefinitions {
     public void addBrand(String brandName) {
         assureBrandNotEntered(brandName);
         myActor.attemptsTo(AddBrand.withNameAndSlug(brandName, brandName.replace(' ', '-')));
-        Integer brandId = myActor.asksFor(TheId.ofBrand(brandName));
+        String brandId = myActor.asksFor(TheId.ofBrand(brandName));
         myActor.remember("BrandId", brandId);
     }
 
