@@ -3,7 +3,6 @@ package com.tesuqa.practicesoftwaretestingtests.screenplay.abilities;
 import com.practicesoftwaretesting.client.ApiClient;
 import com.practicesoftwaretesting.client.ApiException;
 import com.practicesoftwaretesting.client.api.ProductApi;
-import com.practicesoftwaretesting.client.model.InlineResponse201;
 import com.practicesoftwaretesting.client.model.ProductRequest;
 import com.practicesoftwaretesting.client.model.ProductResponse;
 import net.serenitybdd.screenplay.Ability;
@@ -66,7 +65,7 @@ public class UseProductsApi implements Ability {
 
     public void updateProduct(ProductRequest product, Integer productId ) {
         try {
-            productApi.updateProduct(product, productId);
+            productApi.updateProduct(productId, product);
         } catch (ApiException e) {
             e.printStackTrace();
         }
