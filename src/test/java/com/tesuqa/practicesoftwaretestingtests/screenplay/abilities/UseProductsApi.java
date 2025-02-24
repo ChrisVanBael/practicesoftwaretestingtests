@@ -65,7 +65,7 @@ public class UseProductsApi implements Ability {
 
     public void updateProduct(ProductRequest product, Integer productId ) {
         try {
-            productApi.updateProduct(product, productId);
+            productApi.updateProduct(productId, product);
         } catch (ApiException e) {
             e.printStackTrace();
         }

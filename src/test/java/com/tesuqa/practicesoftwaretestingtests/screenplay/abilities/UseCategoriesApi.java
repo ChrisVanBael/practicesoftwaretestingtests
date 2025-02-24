@@ -5,6 +5,7 @@ import com.practicesoftwaretesting.client.ApiException;
 import com.practicesoftwaretesting.client.api.CategoryApi;
 import com.practicesoftwaretesting.client.model.CategoryRequest;
 import com.practicesoftwaretesting.client.model.CategoryResponse;
+import com.practicesoftwaretesting.client.model.CategoryTreeResponse;
 import net.serenitybdd.screenplay.Ability;
 import net.serenitybdd.screenplay.Actor;
 
@@ -46,7 +47,7 @@ public class UseCategoriesApi implements Ability {
         return "call the Categories API at "+ baseUrl;
     }
 
-    public List<CategoryResponse> getCategoryTree(String categorySlug) {
+    public List<CategoryTreeResponse> getCategoryTree(String categorySlug) {
         try {
             return categoryApi.getCategoriesTree(categorySlug);
         } catch (ApiException e) {
@@ -75,13 +76,13 @@ public class UseCategoriesApi implements Ability {
 
     public void updateCategory(CategoryRequest category, Integer categoryId ) {
         try {
-            categoryApi.updateCategory(category, categoryId);
+            categoryApi.updateCategory(categoryId, category);
         } catch (ApiException e) {
             e.printStackTrace();
         }
     }
 
-    public CategoryResponse getCategory(Integer categoryId) {
+    public CategoryTreeResponse getCategory(Integer categoryId) {
         try {
             return categoryApi.getCategory(categoryId);
         } catch (ApiException e) {
