@@ -38,9 +38,9 @@
     </repositories>
     <dependencies>
         <dependency>
-            <groupId>com.practicesoftwaretesting</groupId>
-            <artifactId>practicesoftwaretesting-javaclient</artifactId>
-            <version>0.1.0</version>
+            <groupId>io.testsmith.practicesoftwaretesting</groupId>
+            <artifactId>v1-client</artifactId>
+            <version>0.0.50</version>
         </dependency>
         <dependency>
             <groupId>net.serenity-bdd</groupId>
