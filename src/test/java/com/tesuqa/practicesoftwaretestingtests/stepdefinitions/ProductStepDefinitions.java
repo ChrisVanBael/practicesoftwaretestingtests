@@ -81,9 +81,12 @@ public class ProductStepDefinitions {
      * @param brandName name of the brand
      * @param imageId ID of the image
      */
-    @When("I add product with {string}, {string}, {string}, {string}, {string} and image {string}")
-    public void addProductWithValues(String productName, String description, String price, String category, String brandName, String imageId) {
-        myActor.attemptsTo(AddProduct.withValues(productName, description, price, category, brandName, imageId));
+    @When("I add product with {string}, {string}, {string}, {string}, {string}, {string}, {string} and image {string}")
+    public void addProductWithValues(String productName, String description, String price, String category,
+                                     String brandName, String isLocationOffer, String isRental, String imageId) {
+        Boolean location = Boolean.parseBoolean(isLocationOffer);
+        Boolean rental = Boolean.parseBoolean(isRental);
+        myActor.attemptsTo(AddProduct.withValues(productName, description, price, category, brandName, imageId, location, rental));
     }
 
     /**
@@ -115,7 +118,9 @@ public class ProductStepDefinitions {
         newProduct.setPrice(new BigDecimal(productList.get(2)));
         newProduct.setCategoryId(myActor.asksFor(TheId.ofCategory(productList.get(3))));
         newProduct.setBrandId(myActor.asksFor(TheId.ofBrand(productList.get(4))));
-        newProduct.setProductImageId(Integer.parseInt(productList.get(5)));
+        newProduct.setIsLocationOffer(Boolean.parseBoolean(productList.get(5)));
+        newProduct.setIsRental(Boolean.parseBoolean(productList.get(6)));
+        newProduct.setProductImageId(Integer.parseInt(productList.get(7)));
         myActor.remember("New Product", newProduct);
 
         // verify the product does not exist yet

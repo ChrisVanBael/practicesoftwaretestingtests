@@ -66,7 +66,7 @@ public class UseBrandsApi implements Ability {
 
     public void updateBrand(BrandRequest brand, String brandId ) {
         try {
-            brandApi.updateBrand(brand, brandId);
+            brandApi.updateBrand(brandId, brand);
         } catch (ApiException e) {
             e.printStackTrace();
         }

@@ -94,7 +94,7 @@ public class UseCategoriesApi implements Ability {
 
     public void updateCategory(CategoryRequest category, String categoryId ) {
         try {
-            categoryApi.updateCategory(category, categoryId);
+            categoryApi.updateCategory(categoryId, category);
         } catch (ApiException e) {
             e.printStackTrace();
         }

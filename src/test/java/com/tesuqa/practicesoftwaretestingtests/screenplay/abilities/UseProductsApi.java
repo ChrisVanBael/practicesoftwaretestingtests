@@ -3,7 +3,7 @@ package com.tesuqa.practicesoftwaretestingtests.screenplay.abilities;
 import com.practicesoftwaretesting.client.ApiClient;
 import com.practicesoftwaretesting.client.ApiException;
 import com.practicesoftwaretesting.client.api.ProductApi;
-import com.practicesoftwaretesting.client.model.InlineResponse2005;
+import com.practicesoftwaretesting.client.model.PaginatedProductResponse;
 import com.practicesoftwaretesting.client.model.ProductRequest;
 import com.practicesoftwaretesting.client.model.ProductResponse;
 import net.serenitybdd.screenplay.Ability;
@@ -54,7 +54,7 @@ public class UseProductsApi implements Ability {
 
         for (Integer page=0; page<=lastPage; page++) {
             try {
-                InlineResponse2005 productResp = productApi.getProducts(brandId, categoryId, isRental, priceRange, sort, page);
+                PaginatedProductResponse productResp = productApi.getProducts(brandId, categoryId, isRental, priceRange, sort, page);
                 lastPage = productResp.getLastPage();
                 products.addAll(productResp.getData());
             } catch (ApiException e) {
@@ -75,7 +75,7 @@ public class UseProductsApi implements Ability {
 
     public void updateProduct(ProductRequest product, String productId ) {
         try {
-            productApi.updateProduct(product, productId);
+            productApi.updateProduct(productId, product);
         } catch (ApiException e) {
             e.printStackTrace();
         }
@@ -113,7 +113,7 @@ public class UseProductsApi implements Ability {
 
         for (Integer page=0; page<=lastPage; page++) {
             try {
-                InlineResponse2005 productResp = productApi.searchProduct(query, page);
+                PaginatedProductResponse productResp = productApi.searchProduct(query, page);
                 lastPage = productResp.getLastPage();
                 products.addAll(productResp.getData());
             } catch (ApiException e) {
