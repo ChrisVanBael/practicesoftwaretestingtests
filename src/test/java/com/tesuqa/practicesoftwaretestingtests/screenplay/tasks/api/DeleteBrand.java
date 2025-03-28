@@ -25,4 +25,18 @@ public class DeleteBrand {
                 }
         );
     }
+
+
+    /**
+     * Deletes the Brand with id
+     * @param id id of the brand
+     * @return the task
+     */
+    public static Performable withId(Integer id) {
+        return Task.where(
+            actor -> {
+                UseBrandsApi.as(actor).deleteBrand(id);
+            }
+        );
+    }
 }

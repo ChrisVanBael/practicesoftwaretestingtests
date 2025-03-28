@@ -1,5 +1,8 @@
 package com.tesuqa.practicesoftwaretestingtests.stepdefinitions;
 
+import com.practicesoftwaretesting.client.model.BrandResponse;
+import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheBrands;
+import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheId;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api.AddBrand;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api.DeleteBrand;
 import io.cucumber.java.Before;
@@ -20,14 +23,14 @@ import java.util.List;
 public class BrandStepDefinitions {
 
     private EnvironmentVariables environmentVariables;
-    private Actor apiActor;
+    private Actor myActor;
 
     @Before
     public void setTheStage() {
-        OnStage.setTheStage(new OnlineCast());
+        myActor = OnStage.theActorCalled("myActor");
         String theRestApiBaseUrl = EnvironmentSpecificConfiguration
                 .from(environmentVariables).getProperty("api.base.url");
-        apiActor = Actor.named("ApiActor").whoCan(UseBrandsApi.at(theRestApiBaseUrl));
+        myActor.whoCan(UseBrandsApi.at(theRestApiBaseUrl));
     }
 
     /**
@@ -36,9 +39,9 @@ public class BrandStepDefinitions {
      */
     @Given("the {string} brand is not entered yet")
     public void assureBrandNotEntered(String brandName) {
-        List<String> allBrandNames = apiActor.asksFor(TheBrandNames.knownByTheSystem());
+        List<String> allBrandNames = myActor.asksFor(TheBrandNames.knownByTheSystem());
         if (allBrandNames.contains(brandName)) {
-            apiActor.attemptsTo(DeleteBrand.withName(brandName));
+            myActor.attemptsTo(DeleteBrand.withName(brandName));
         }
     }
 
@@ -48,8 +51,8 @@ public class BrandStepDefinitions {
      * @param brandSlug slug of the brand
      */
     @When("I add brand with name {string} and slug {string}")
-    public void addBrand(String brandName, String brandSlug) {
-        apiActor.attemptsTo(AddBrand.withNameAndSlug(brandName, brandSlug));
+    public void addBrandWithSlug(String brandName, String brandSlug) {
+        myActor.attemptsTo(AddBrand.withNameAndSlug(brandName, brandSlug));
     }
 
     /**
@@ -58,8 +61,22 @@ public class BrandStepDefinitions {
      */
     @Then("the {string} brand is available")
     public void verifyBrandAvailable(String brandName) {
-        List<String> allBrandNames = apiActor.asksFor(TheBrandNames.knownByTheSystem());
-        apiActor.attemptsTo(Ensure.that(brandName).isIn(allBrandNames));
+        List<String> allBrandNames = myActor.asksFor(TheBrandNames.knownByTheSystem());
+        myActor.attemptsTo(Ensure.that(brandName).isIn(allBrandNames));
+    }
+
+    /**
+     * Add a new brand, verifies first if it exists, if it does, it deletes it
+     * @param brandName the name of the brand to add
+     * <b>Memory Read</b>: "nothing" <br>
+     * <b>Memory Write</b>: "BrandId" <br>
+     */
+    @When("I add the new brand {string}")
+    public void addBrand(String brandName) {
+        assureBrandNotEntered(brandName);
+        myActor.attemptsTo(AddBrand.withNameAndSlug(brandName, brandName.replace(' ', '-')));
+        Integer brandId = myActor.asksFor(TheId.ofBrand(brandName));
+        myActor.remember("BrandId", brandId);
     }
 
 
