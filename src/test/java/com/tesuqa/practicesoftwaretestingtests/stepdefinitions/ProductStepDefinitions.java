@@ -1,7 +1,7 @@
 package com.tesuqa.practicesoftwaretestingtests.stepdefinitions;
 
-import com.practicesoftwaretesting.client.model.ProductRequest;
-import com.practicesoftwaretesting.client.model.ProductResponse;
+import com.practicesoftwaretesting.client.v1.model.ProductRequest;
+import com.practicesoftwaretesting.client.v1.model.ProductResponse;
 import com.tesuqa.practicesoftwaretestingtests.pages.HomePage;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseBrandsApi;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseCategoriesApi;

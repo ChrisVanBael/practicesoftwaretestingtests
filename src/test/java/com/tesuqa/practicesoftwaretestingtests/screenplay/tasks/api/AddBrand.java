@@ -1,6 +1,6 @@
 package com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api;
 
-import com.practicesoftwaretesting.client.model.BrandRequest;
+import com.practicesoftwaretesting.client.v1.model.BrandRequest;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseBrandsApi;
 import net.serenitybdd.screenplay.Performable;
 import net.serenitybdd.screenplay.Task;
