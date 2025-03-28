@@ -1,6 +1,6 @@
 package com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api;
 
-import com.practicesoftwaretesting.client.model.ProductRequest;
+import com.practicesoftwaretesting.client.v1.model.ProductRequest;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseProductsApi;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheId;
 import net.serenitybdd.screenplay.Performable;

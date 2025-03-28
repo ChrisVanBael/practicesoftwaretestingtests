@@ -1,17 +1,21 @@
 package com.tesuqa.practicesoftwaretestingtests.stepdefinitions;
 
-import com.practicesoftwaretesting.client.model.ProductRequest;
-import com.practicesoftwaretesting.client.model.ProductResponse;
+import com.practicesoftwaretesting.client.v1.model.ProductRequest;
+import com.practicesoftwaretesting.client.v1.model.ProductResponse;
 import com.tesuqa.practicesoftwaretestingtests.pages.HomePage;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseBrandsApi;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseCategoriesApi;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseProductsApi;
+import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheName;
+import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.web.*;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.web.TheProductNames;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheId;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheProducts;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api.AddProduct;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api.DeleteProduct;
+import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.web.NavigateTo;
 import io.cucumber.datatable.DataTable;
+import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -28,6 +32,11 @@ import org.openqa.selenium.WebDriver;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static net.serenitybdd.screenplay.GivenWhenThen.seeThat;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 
 public class ProductStepDefinitions {
@@ -174,7 +183,7 @@ public class ProductStepDefinitions {
      * <b>Memory Write</b>: nothing <br>
      */
     @Then("that product can be found on the homepage")
-    public void verifyProductIsAvailableWeb() {
+    public void verifyProductIsAvailableHomepage() {
         ProductRequest newProduct = myActor.recall("New Product");
 
         myActor.attemptsTo(Open.browserOn().the(HomePage.class));
@@ -184,6 +193,39 @@ public class ProductStepDefinitions {
         // Could also be written as:
         //myActor.attemptsTo(Ensure.that(newProduct.getName()).isIn(TheProductNames.onTheHomePage().answeredBy(myActor)));
     }
+
+    /**
+     * Verifies the product details are correct on its product page <br>
+     * <b>Memory Read</b>: "New Product" <br>
+     * <b>Memory Write</b>: nothing
+     */
+    @Then("the details of that product are correct on its product page")
+    public void verifyProductIsAvailableDetailpage() {
+        ProductRequest newProduct = myActor.recall("New Product");
+
+        myActor.attemptsTo(Open.browserOn().the(HomePage.class));
+        myActor.attemptsTo(NavigateTo.theProductOnTheHomepage(newProduct.getName()));
+
+        myActor.should(
+            seeThat(TheProductName.onTheProductPage(),
+                is(equalTo(newProduct.getName()))),
+            seeThat(TheDescription.onTheProductPage(),
+                is(equalTo(newProduct.getDescription()))),
+            seeThat(TheCategory.onTheProductPage(),
+                is(equalTo(TheName.ofCategory(newProduct.getCategoryId()).answeredBy(myActor)))),
+            seeThat(TheBrand.onTheProductPage(),
+                is(equalTo(TheName.ofBrand(newProduct.getBrandId()).answeredBy(myActor)))),
+            seeThat(ThePrice.onTheProductPage(),
+                is(equalTo(newProduct.getPrice().toString())))
+        );
+    }
+
+    @After
+    public void cleanup() {
+        ProductRequest newProduct = myActor.recall("New Product");
+        // The actor's memory allows us to easily delete the product at the end of the test
+        if (newProduct != null) {
+            myActor.attemptsTo(DeleteProduct.withName(newProduct.getName()));
 
     private void assureProductDoesNotExist(String productName, Integer brandId) {
         // verify the product does not exist yet
