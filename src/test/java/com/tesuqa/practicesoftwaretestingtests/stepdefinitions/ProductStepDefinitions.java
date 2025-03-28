@@ -1,13 +1,14 @@
 package com.tesuqa.practicesoftwaretestingtests.stepdefinitions;
 
-import com.practicesoftwaretesting.client.model.ProductRequest;
-import com.practicesoftwaretesting.client.model.ProductResponse;
+import com.practicesoftwaretesting.client.v1.model.ProductRequest;
+import com.practicesoftwaretesting.client.v1.model.ProductResponse;
 import com.tesuqa.practicesoftwaretestingtests.pages.HomePage;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseBrandsApi;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseCategoriesApi;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseProductsApi;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheName;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.web.*;
+import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.web.TheProductNames;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheId;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheProducts;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api.AddProduct;
@@ -24,7 +25,6 @@ import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
 import net.serenitybdd.screenplay.actions.Open;
 import net.serenitybdd.screenplay.actors.OnStage;
-import net.serenitybdd.screenplay.actors.OnlineCast;
 import net.serenitybdd.screenplay.ensure.Ensure;
 import net.thucydides.model.util.EnvironmentVariables;
 import org.openqa.selenium.WebDriver;
@@ -38,6 +38,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+
 public class ProductStepDefinitions {
 
     private EnvironmentVariables environmentVariables;
@@ -46,10 +47,9 @@ public class ProductStepDefinitions {
 
     @Before
     public void setTheStage() {
-        OnStage.setTheStage(new OnlineCast());
+        myActor = OnStage.theActorCalled("myActor");
         String theRestApiBaseUrl = EnvironmentSpecificConfiguration
                 .from(environmentVariables).getProperty("api.base.url");
-        myActor = Actor.named("MyActor");
         myActor.whoCan(UseProductsApi.at(theRestApiBaseUrl));
         myActor.whoCan(UseBrandsApi.at(theRestApiBaseUrl));
         myActor.whoCan(UseCategoriesApi.at(theRestApiBaseUrl));
@@ -121,13 +121,7 @@ public class ProductStepDefinitions {
         myActor.remember("New Product", newProduct);
 
         // verify the product does not exist yet
-        List<String> allProductNames = myActor.asksFor(TheProducts.ofBrand(newProduct.getBrandId()))
-                .stream()
-                .map(ProductResponse::getName)
-                .collect(Collectors.toList());
-        if (allProductNames.contains(newProduct.getName())) {
-            myActor.attemptsTo(DeleteProduct.withName(newProduct.getName()));
-        }
+        assureProductDoesNotExist(newProduct.getName(), newProduct.getBrandId());
     }
 
     /**
@@ -140,6 +134,32 @@ public class ProductStepDefinitions {
         ProductRequest newProduct = myActor.recall("New Product");
         myActor.attemptsTo(AddProduct.withProduct(newProduct));
     }
+
+
+    /**
+     * Verifies the product name doesn't exist yet. If it exists, deletes it </b>
+     * Then add the product via the API
+     * @param dt DataTable with the fields for a ProductRequest <br>
+     * <b>Memory Read</b>: "CategoryId", "BrandId" <br>
+     * <b>Memory Write</b>: "New Product" <br>
+     */
+    @Given("I add following new product for this brand and category")
+    public void addProductForBrandAndCategory(DataTable dt) {
+        // create a ProductRequest and remember it in the memory of the actor
+        List<String> productList = dt.cells().stream().skip(1).findFirst().get();
+        ProductRequest newProduct = new ProductRequest();
+        newProduct.setName(productList.get(0));
+        newProduct.setDescription(productList.get(1));
+        newProduct.setPrice(new BigDecimal(productList.get(2)));
+        newProduct.setCategoryId(myActor.recall("CategoryId"));
+        newProduct.setBrandId(myActor.recall("BrandId"));
+        newProduct.setProductImageId(Integer.parseInt(productList.get(3)));
+
+        assureProductDoesNotExist(newProduct.getName(), newProduct.getBrandId());
+        myActor.attemptsTo(AddProduct.withProduct(newProduct));
+        myActor.remember("New Product", newProduct);
+    }
+
 
     /**
      * Verifies the product is available in the API <br>
@@ -206,6 +226,15 @@ public class ProductStepDefinitions {
         // The actor's memory allows us to easily delete the product at the end of the test
         if (newProduct != null) {
             myActor.attemptsTo(DeleteProduct.withName(newProduct.getName()));
+
+    private void assureProductDoesNotExist(String productName, Integer brandId) {
+        // verify the product does not exist yet
+        List<String> allProductNames = myActor.asksFor(TheProducts.ofBrand(brandId))
+            .stream()
+            .map(ProductResponse::getName)
+            .collect(Collectors.toList());
+        if (allProductNames.contains(productName)) {
+            myActor.attemptsTo(DeleteProduct.withName(productName));
         }
     }
 }

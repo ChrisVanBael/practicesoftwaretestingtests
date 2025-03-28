@@ -1,6 +1,6 @@
 package com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api;
 
-import com.practicesoftwaretesting.client.model.BrandResponse;
+import com.practicesoftwaretesting.client.v1.model.BrandResponse;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseBrandsApi;
 import net.serenitybdd.screenplay.Performable;
 import net.serenitybdd.screenplay.Task;
@@ -23,6 +23,20 @@ public class DeleteBrand {
                             .findFirst().get();
                     UseBrandsApi.as(actor).deleteBrand(id);
                 }
+        );
+    }
+
+
+    /**
+     * Deletes the Brand with id
+     * @param id id of the brand
+     * @return the task
+     */
+    public static Performable withId(Integer id) {
+        return Task.where(
+            actor -> {
+                UseBrandsApi.as(actor).deleteBrand(id);
+            }
         );
     }
 }
