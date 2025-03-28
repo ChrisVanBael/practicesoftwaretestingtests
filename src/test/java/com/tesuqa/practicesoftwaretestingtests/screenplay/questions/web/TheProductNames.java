@@ -3,8 +3,7 @@ package com.tesuqa.practicesoftwaretestingtests.screenplay.questions.web;
 import com.tesuqa.practicesoftwaretestingtests.pages.HomePage;
 import net.serenitybdd.screenplay.Question;
 import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
-import net.serenitybdd.screenplay.questions.TextContent;
-import org.openqa.selenium.By;
+
 
 import java.util.List;
 import java.util.stream.Collectors;
