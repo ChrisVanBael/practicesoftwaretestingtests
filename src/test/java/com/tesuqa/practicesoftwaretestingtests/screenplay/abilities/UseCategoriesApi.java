@@ -85,13 +85,14 @@ public class UseCategoriesApi implements Ability {
         }
     }
 
-    public void createCategory(CategoryRequest category) {
+    public CategoryResponse createCategory(CategoryRequest category) {
         try {
             categoryApi.storeCategory()
                 .body(category)
                 .executeAs(Response::thenReturn);
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
     }
 
