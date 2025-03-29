@@ -1,14 +1,14 @@
 package com.tesuqa.practicesoftwaretestingtests.stepdefinitions;
 
-import com.practicesoftwaretesting.client.v1.model.ProductRequest;
-import com.practicesoftwaretesting.client.v1.model.ProductResponse;
+import com.practicesoftwaretesting.client.v5.model.ProductRequest;
+import com.practicesoftwaretesting.client.v5.model.ProductResponse;
 import com.tesuqa.practicesoftwaretestingtests.pages.HomePage;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseBrandsApi;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseCategoriesApi;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseProductsApi;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheName;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.web.*;
-import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.web.TheProductNames;
+import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.web.NavigateTo;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheId;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheProducts;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api.AddProduct;
@@ -25,6 +25,7 @@ import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
 import net.serenitybdd.screenplay.actions.Open;
 import net.serenitybdd.screenplay.actors.OnStage;
+import net.serenitybdd.screenplay.actors.OnlineCast;
 import net.serenitybdd.screenplay.ensure.Ensure;
 import net.thucydides.model.util.EnvironmentVariables;
 import org.openqa.selenium.WebDriver;
@@ -37,7 +38,6 @@ import static net.serenitybdd.screenplay.GivenWhenThen.seeThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertAll;
-
 
 public class ProductStepDefinitions {
 
@@ -63,7 +63,7 @@ public class ProductStepDefinitions {
      */
     @Given("the {string} product is not entered yet for {string}")
     public void assureProductNotEntered(String productName, String brandName) {
-        Integer brandId = myActor.asksFor(TheId.ofBrand(brandName));
+        String brandId = myActor.asksFor(TheId.ofBrand(brandName));
         List<String> allProductNames = myActor.asksFor(TheProducts.ofBrand(brandId))
                 .stream()
                 .map(ProductResponse::getName)
@@ -226,8 +226,10 @@ public class ProductStepDefinitions {
         // The actor's memory allows us to easily delete the product at the end of the test
         if (newProduct != null) {
             myActor.attemptsTo(DeleteProduct.withName(newProduct.getName()));
+        }
+    }
 
-    private void assureProductDoesNotExist(String productName, Integer brandId) {
+    private void assureProductDoesNotExist(String productName, String brandId) {
         // verify the product does not exist yet
         List<String> allProductNames = myActor.asksFor(TheProducts.ofBrand(brandId))
             .stream()

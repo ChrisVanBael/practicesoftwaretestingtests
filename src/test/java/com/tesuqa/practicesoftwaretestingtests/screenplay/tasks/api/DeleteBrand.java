@@ -16,7 +16,7 @@ public class DeleteBrand {
     public static Performable withName(String name) {
         return Task.where(
                 actor -> {
-                    Integer id = UseBrandsApi.as(actor).getAllBrands()
+                    String id = UseBrandsApi.as(actor).getAllBrands()
                             .stream()
                             .filter(brandResponse -> brandResponse.getName().equals(name))
                             .map(BrandResponse::getId)
@@ -32,7 +32,7 @@ public class DeleteBrand {
      * @param id id of the brand
      * @return the task
      */
-    public static Performable withId(Integer id) {
+    public static Performable withId(String id) {
         return Task.where(
             actor -> {
                 UseBrandsApi.as(actor).deleteBrand(id);

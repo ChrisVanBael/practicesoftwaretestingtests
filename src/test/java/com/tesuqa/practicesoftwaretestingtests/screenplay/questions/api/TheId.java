@@ -13,7 +13,7 @@ public class TheId {
      * Searches for the id of a brand name
      * @return id of the brand name
      */
-    public static Question<Integer> ofBrand(String brandName) {
+    public static Question<String> ofBrand(String brandName) {
         return Question.about("the id of brand")
                 .answeredBy(
                         actor -> UseBrandsApi.as(actor).getAllBrands()
@@ -30,7 +30,7 @@ public class TheId {
      * Searches for the id of a category name
      * @return id of the category name
      */
-    public static Question<Integer> ofCategory(String categoryName) {
+    public static Question<String> ofCategory(String categoryName) {
 
         return Question.about("the id of category")
                 .answeredBy(

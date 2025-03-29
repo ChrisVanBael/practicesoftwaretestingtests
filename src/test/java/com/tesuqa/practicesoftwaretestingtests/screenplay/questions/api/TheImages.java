@@ -1,6 +1,7 @@
 package com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api;
 
-import com.practicesoftwaretesting.client.v1.model.ImageResponse;
+
+import com.practicesoftwaretesting.client.v5.model.ImageResponse;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseImagesApi;
 import net.serenitybdd.screenplay.Question;
 

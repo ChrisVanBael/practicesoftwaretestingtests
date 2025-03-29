@@ -84,7 +84,7 @@ public class UseBrandsApi implements Ability {
         }
     }
 
-    public void updateBrand(BrandRequest brand, Integer brandId ) {
+    public void updateBrand(BrandRequest brand, String brandId ) {
         try {
             brandApi.updateBrand()
                 .body(brand)
@@ -95,7 +95,7 @@ public class UseBrandsApi implements Ability {
         }
     }
 
-    public BrandResponse getBrand(Integer brandId) {
+    public BrandResponse getBrand(String brandId) {
         try {
             return brandApi.getBrand()
                 .brandIdPath(brandId)
@@ -106,13 +106,22 @@ public class UseBrandsApi implements Ability {
         }
     }
 
-    public void deleteBrand(Integer brandId) {
+    public void deleteBrand(String brandId) {
         try {
             brandApi.deleteBrand()
                 .brandIdPath(brandId)
                 .execute(Response::thenReturn);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public List<BrandResponse> searchBrand(String query) {
+        try {
+            return brandApi.searchBrand(query);
+        } catch (ApiException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 

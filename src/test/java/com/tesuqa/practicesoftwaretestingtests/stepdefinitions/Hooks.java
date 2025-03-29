@@ -44,14 +44,14 @@ public class Hooks {
         }
 
         // Delete the created category
-        Integer categoryId = myActor.recall("CategoryId");
+        String categoryId = myActor.recall("CategoryId");
         if (categoryId != null) {
             myActor.whoCan(UseCategoriesApi.at(theRestApiBaseUrl));
             myActor.attemptsTo(DeleteCategory.withId(categoryId));
         }
 
         // Delete the created brand
-        Integer brandId = myActor.recall("BrandId");
+        String brandId = myActor.recall("BrandId");
         if (brandId != null) {
             myActor.whoCan(UseBrandsApi.at(theRestApiBaseUrl));
             myActor.attemptsTo(DeleteBrand.withId(brandId));

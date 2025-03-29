@@ -1,10 +1,10 @@
 package com.tesuqa.practicesoftwaretestingtests.screenplay.abilities;
 
-import com.practicesoftwaretesting.v1.client.ApiClient;
-import com.practicesoftwaretesting.client.v1.api.CategoryApi;
-import com.practicesoftwaretesting.client.v1.model.CategoryRequest;
-import com.practicesoftwaretesting.client.v1.model.CategoryResponse;
-import com.practicesoftwaretesting.client.v1.model.CategoryTreeResponse;
+import com.practicesoftwaretesting.v5.client.ApiClient;
+import com.practicesoftwaretesting.client.v5.api.CategoryApi;
+import com.practicesoftwaretesting.client.v5.model.CategoryRequest;
+import com.practicesoftwaretesting.client.v5.model.CategoryResponse;
+import com.practicesoftwaretesting.client.v5.model.CategoryTreeResponse;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
@@ -63,7 +63,7 @@ public class UseCategoriesApi implements Ability {
         return "call the Categories API at "+ baseUrl;
     }
 
-    public List<CategoryTreeResponse> getCategoryTree(String categorySlug) {
+    public List<CategoryTreeResponse> getAllCategoryTrees(String categorySlug) {
         try {
             return categoryApi.getCategoriesTree()
                 .byCategorySlugQuery(categorySlug)
@@ -96,7 +96,7 @@ public class UseCategoriesApi implements Ability {
         }
     }
 
-    public void updateCategory(CategoryRequest category, Integer categoryId ) {
+    public CategoryTreeResponse getCategoryTree(String categoryId) {
         try {
             categoryApi.updateCategory()
                 .categoryIdPath(categoryId)
@@ -104,6 +104,7 @@ public class UseCategoriesApi implements Ability {
                 .executeAs(Response::thenReturn);
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
     }
 
@@ -118,7 +119,15 @@ public class UseCategoriesApi implements Ability {
         }
     }
 
-    public void deleteCategory(Integer categoryId) {
+    public void updateCategory(CategoryRequest category, String categoryId ) {
+        try {
+            categoryApi.updateCategory(category, categoryId);
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteCategory(String categoryId) {
         try {
             categoryApi.deleteCategory()
                 .categoryIdPath(categoryId)

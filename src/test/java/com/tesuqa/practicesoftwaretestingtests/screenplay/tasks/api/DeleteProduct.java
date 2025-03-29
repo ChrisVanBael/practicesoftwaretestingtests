@@ -16,7 +16,7 @@ public class DeleteProduct {
     public static Performable withName(String name) {
         return Task.where(
                 actor -> {
-                    Integer id = UseProductsApi.as(actor).getAllProducts(null, null, null)
+                    String id = UseProductsApi.as(actor).getAllProducts(null, null, null, null, null)
                             .stream()
                             .filter(productResponse -> productResponse.getName().equals(name))
                             .map(ProductResponse::getId)

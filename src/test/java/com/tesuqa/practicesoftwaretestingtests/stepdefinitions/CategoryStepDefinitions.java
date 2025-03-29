@@ -73,7 +73,7 @@ public class CategoryStepDefinitions {
     public void addCategory(String categoryName) {
         assureCategoryNotEntered(categoryName);
         myActor.attemptsTo(AddCategory.withNameAndSlug(categoryName, categoryName.replace(' ', '-')));
-        Integer categoryId = myActor.asksFor(TheId.ofCategory(categoryName));
+        String categoryId = myActor.asksFor(TheId.ofCategory(categoryName));
         myActor.remember("CategoryId", categoryId);
     }
 

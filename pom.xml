@@ -39,7 +39,7 @@
     <dependencies>
         <dependency>
             <groupId>io.testsmith.practicesoftwaretesting</groupId>
-            <artifactId>v2-client</artifactId>
+            <artifactId>v5-client</artifactId>
             <version>0.0.50</version>
         </dependency>
         <dependency>

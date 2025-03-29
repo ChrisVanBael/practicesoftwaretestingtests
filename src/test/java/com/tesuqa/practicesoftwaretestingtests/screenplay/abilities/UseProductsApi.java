@@ -1,9 +1,9 @@
 package com.tesuqa.practicesoftwaretestingtests.screenplay.abilities;
 
-import com.practicesoftwaretesting.v1.client.ApiClient;
-import com.practicesoftwaretesting.client.v1.api.ProductApi;
-import com.practicesoftwaretesting.client.v1.model.ProductRequest;
-import com.practicesoftwaretesting.client.v1.model.ProductResponse;
+import com.practicesoftwaretesting.v5.client.ApiClient;
+import com.practicesoftwaretesting.client.v5.api.ProductApi;
+import com.practicesoftwaretesting.client.v5.model.ProductRequest;
+import com.practicesoftwaretesting.client.v5.model.ProductResponse;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
@@ -90,7 +90,7 @@ public class UseProductsApi implements Ability {
         }
     }
 
-    public void updateProduct(ProductRequest product, Integer productId ) {
+    public void updateProduct(ProductRequest product, String productId ) {
         try {
             productApi.updateProduct()
                 .productIdPath(productId)
@@ -101,7 +101,7 @@ public class UseProductsApi implements Ability {
         }
     }
 
-    public ProductResponse getProduct(Integer productId) {
+    public ProductResponse getProduct(String productId) {
         try {
             return productApi.getProduct()
                 .productIdPath(productId)
@@ -112,7 +112,7 @@ public class UseProductsApi implements Ability {
         }
     }
 
-    public void deleteProduct(Integer productId) {
+    public void deleteProduct(String productId) {
         try {
             productApi.deleteProduct()
                 .productIdPath(productId)
@@ -122,7 +122,7 @@ public class UseProductsApi implements Ability {
         }
     }
 
-    public List<ProductResponse> getRelatedProducts(Integer productId) {
+    public List<ProductResponse> getRelatedProducts(String productId) {
         try {
             return productApi.getRelatedProducts()
                 .productIdPath(productId)
@@ -139,7 +139,7 @@ public class UseProductsApi implements Ability {
 
         for (Integer page=0; page<=lastPage; page++) {
             try {
-                InlineResponse2001 productResp = productApi.searchProduct(query, page);
+                InlineResponse2005 productResp = productApi.searchProduct(query, page);
                 lastPage = productResp.getLastPage();
                 products.addAll(productResp.getData());
             } catch (ApiException e) {
