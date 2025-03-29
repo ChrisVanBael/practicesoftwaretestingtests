@@ -1,6 +1,6 @@
 package com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api;
 
-import com.practicesoftwaretesting.client.model.CategoryResponse;
+import com.practicesoftwaretesting.client.v1.model.CategoryResponse;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseCategoriesApi;
 import net.serenitybdd.screenplay.Performable;
 import net.serenitybdd.screenplay.Task;

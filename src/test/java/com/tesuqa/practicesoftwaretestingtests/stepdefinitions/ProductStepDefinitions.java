@@ -1,7 +1,7 @@
 package com.tesuqa.practicesoftwaretestingtests.stepdefinitions;
 
-import com.practicesoftwaretesting.client.model.ProductRequest;
-import com.practicesoftwaretesting.client.model.ProductResponse;
+import com.practicesoftwaretesting.client.v5.model.ProductRequest;
+import com.practicesoftwaretesting.client.v5.model.ProductResponse;
 import com.tesuqa.practicesoftwaretestingtests.pages.HomePage;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseBrandsApi;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseCategoriesApi;
@@ -13,7 +13,9 @@ import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheId;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheProducts;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api.AddProduct;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api.DeleteProduct;
+import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.web.NavigateTo;
 import io.cucumber.datatable.DataTable;
+import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -186,7 +188,7 @@ public class ProductStepDefinitions {
      * <b>Memory Write</b>: nothing <br>
      */
     @Then("that product can be found on the homepage")
-    public void verifyProductIsAvailableWeb() {
+    public void verifyProductIsAvailableHomepage() {
         ProductRequest newProduct = myActor.recall("New Product");
 
         myActor.attemptsTo(Open.browserOn().the(HomePage.class));
@@ -221,6 +223,15 @@ public class ProductStepDefinitions {
             seeThat(ThePrice.onTheProductPage(),
                 is(equalTo(newProduct.getPrice().toString())))
         );
+    }
+
+    @After
+    public void cleanup() {
+        ProductRequest newProduct = myActor.recall("New Product");
+        // The actor's memory allows us to easily delete the product at the end of the test
+        if (newProduct != null) {
+            myActor.attemptsTo(DeleteProduct.withName(newProduct.getName()));
+        }
     }
 
     private void assureProductDoesNotExist(String productName, String brandId) {
