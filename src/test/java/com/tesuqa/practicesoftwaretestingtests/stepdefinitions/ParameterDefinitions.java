@@ -1,6 +1,7 @@
 package com.tesuqa.practicesoftwaretestingtests.stepdefinitions;
 
 import io.cucumber.java.Before;
+import io.cucumber.java.BeforeAll;
 import io.cucumber.java.ParameterType;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.actors.OnStage;
@@ -12,4 +13,5 @@ public class ParameterDefinitions {
     public Actor actor(String actorName) {
         return OnStage.theActorCalled(actorName);
     }
+
 }

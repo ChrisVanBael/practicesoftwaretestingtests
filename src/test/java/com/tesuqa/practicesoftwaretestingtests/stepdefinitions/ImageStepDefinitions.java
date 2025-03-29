@@ -39,13 +39,12 @@ public class ImageStepDefinitions {
     private Actor myActor;
     private WebDriver browser;
 
-    @Before
-    public void setTheStage() {
-        OnStage.setTheStage(new OnlineCast());
-        String theRestApiBaseUrl = EnvironmentSpecificConfiguration
-                .from(environmentVariables).getProperty("api.base.url");
-        myActor = Actor.named("MyActor");
-        myActor.whoCan(UseImagesApi.at(theRestApiBaseUrl));
+    @Before(order = 10)
+    public void prepareBrandActor() {
+        // Access the existing actor via OnStage
+        // No need to set API abilities again as they're already added in Hooks
+        myActor = OnStage.theActorInTheSpotlight();
+        myActor.remember("images", 4);
     }
 
 

@@ -45,15 +45,12 @@ public class ProductStepDefinitions {
     private Actor myActor;
     private WebDriver browser;
 
-    @Before
-    public void setTheStage() {
-        myActor = OnStage.theActorCalled("myActor");
-        String theRestApiBaseUrl = EnvironmentSpecificConfiguration
-                .from(environmentVariables).getProperty("api.base.url");
-        myActor.whoCan(UseProductsApi.at(theRestApiBaseUrl));
-        myActor.whoCan(UseBrandsApi.at(theRestApiBaseUrl));
-        myActor.whoCan(UseCategoriesApi.at(theRestApiBaseUrl));
-        myActor.whoCan(BrowseTheWeb.with(browser));
+    @Before(order = 10)
+    public void prepareBrandActor() {
+        // Access the existing actor via OnStage
+        // No need to set API abilities again as they're already added in Hooks
+        myActor = OnStage.theActorInTheSpotlight();
+        myActor.remember("products", 3);
     }
 
     /**
@@ -226,6 +223,8 @@ public class ProductStepDefinitions {
         // The actor's memory allows us to easily delete the product at the end of the test
         if (newProduct != null) {
             myActor.attemptsTo(DeleteProduct.withName(newProduct.getName()));
+        }
+    }
 
     private void assureProductDoesNotExist(String productName, Integer brandId) {
         // verify the product does not exist yet

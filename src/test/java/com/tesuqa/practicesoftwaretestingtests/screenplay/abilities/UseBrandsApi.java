@@ -75,7 +75,7 @@ public class UseBrandsApi implements Ability {
 
     public BrandResponse createBrand(BrandRequest brand) {
         try {
-            brandApi.storeBrand()
+            return brandApi.storeBrand()
                 .body(brand)
                 .executeAs(Response::thenReturn);
         } catch (Exception e) {
