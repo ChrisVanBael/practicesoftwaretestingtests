@@ -1,6 +1,6 @@
 package com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api;
 
-import com.practicesoftwaretesting.client.v1.model.BrandResponse;
+import com.practicesoftwaretesting.client.v5.model.BrandResponse;
 import net.serenitybdd.screenplay.Question;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseBrandsApi;
 

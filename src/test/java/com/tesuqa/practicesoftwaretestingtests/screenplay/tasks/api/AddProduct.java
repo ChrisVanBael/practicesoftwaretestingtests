@@ -1,6 +1,6 @@
 package com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api;
 
-import com.practicesoftwaretesting.client.v1.model.ProductRequest;
+import com.practicesoftwaretesting.client.v5.model.ProductRequest;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseProductsApi;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheId;
 import net.serenitybdd.screenplay.Performable;
@@ -33,7 +33,7 @@ public class AddProduct {
                     newProduct.setPrice(new BigDecimal(price));
                     newProduct.setCategoryId(actor.asksFor(TheId.ofCategory(categoryName)));
                     newProduct.setBrandId(actor.asksFor(TheId.ofBrand(brandName)));
-                    newProduct.setProductImageId(Integer.parseInt(imageId));
+                    newProduct.setProductImageId(imageId);
                     newProduct.setIsLocationOffer(isLocationOffer);
                     newProduct.setIsRental(isRental);
                     UseProductsApi.as(actor).createProduct(newProduct);
@@ -48,7 +48,7 @@ public class AddProduct {
      */
     public static Performable withProduct(ProductRequest newProduct){
         return Task.where(
-                actor -> UseProductsApi.as(actor).createProduct(newProduct)
+            actor -> UseProductsApi.as(actor).createProduct(newProduct)
         );
     }
 }

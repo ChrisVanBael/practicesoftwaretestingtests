@@ -1,6 +1,6 @@
 package com.tesuqa.practicesoftwaretestingtests.stepdefinitions;
 
-import com.practicesoftwaretesting.client.model.BrandResponse;
+import com.practicesoftwaretesting.client.v5.model.BrandResponse;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheBrands;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheId;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api.AddBrand;
@@ -25,12 +25,12 @@ public class BrandStepDefinitions {
     private EnvironmentVariables environmentVariables;
     private Actor myActor;
 
-    @Before
-    public void setTheStage() {
-        myActor = OnStage.theActorCalled("myActor");
-        String theRestApiBaseUrl = EnvironmentSpecificConfiguration
-                .from(environmentVariables).getProperty("api.base.url");
-        myActor.whoCan(UseBrandsApi.at(theRestApiBaseUrl));
+
+    @Before(order = 10)
+    public void prepareBrandActor() {
+        // Access the existing actor via OnStage
+        // No need to set API abilities again as they're already added in Hooks
+        myActor = OnStage.theActorInTheSpotlight();
     }
 
     /**

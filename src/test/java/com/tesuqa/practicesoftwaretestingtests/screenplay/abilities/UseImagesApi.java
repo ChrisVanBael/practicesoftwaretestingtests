@@ -1,8 +1,8 @@
 package com.tesuqa.practicesoftwaretestingtests.screenplay.abilities;
 
-import com.practicesoftwaretesting.v1.client.ApiClient;
-import com.practicesoftwaretesting.client.v1.api.ImageApi;
-import com.practicesoftwaretesting.client.v1.model.ImageResponse;
+import com.practicesoftwaretesting.client.v5.ApiClient;
+import com.practicesoftwaretesting.client.v5.api.ImageApi;
+import com.practicesoftwaretesting.client.v5.model.ImageResponse;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
@@ -62,13 +62,8 @@ public class UseImagesApi implements Ability {
     }
 
     public List<ImageResponse> getAllImages() {
-        try {
-            return imagesApi.getImages()
-                .executeAs(Response::thenReturn);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        return imagesApi.getImages()
+            .executeAs(Response::thenReturn);
     }
 }
 

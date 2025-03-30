@@ -1,10 +1,11 @@
 package com.tesuqa.practicesoftwaretestingtests.screenplay.abilities;
 
-import com.practicesoftwaretesting.v5.client.ApiClient;
+import com.practicesoftwaretesting.client.v5.ApiClient;
 import com.practicesoftwaretesting.client.v5.api.CategoryApi;
 import com.practicesoftwaretesting.client.v5.model.CategoryRequest;
 import com.practicesoftwaretesting.client.v5.model.CategoryResponse;
 import com.practicesoftwaretesting.client.v5.model.CategoryTreeResponse;
+import com.practicesoftwaretesting.client.v5.model.UpdateResponse;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
@@ -64,78 +65,40 @@ public class UseCategoriesApi implements Ability {
     }
 
     public List<CategoryTreeResponse> getAllCategoryTrees(String categorySlug) {
-        try {
-            return categoryApi.getCategoriesTree()
-                .byCategorySlugQuery(categorySlug)
-                .executeAs(Response::thenReturn);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        return categoryApi.getCategoriesTree()
+            .byCategorySlugQuery(categorySlug)
+            .executeAs(Response::thenReturn);
     }
 
 
     public List<CategoryResponse> getAllCategories() {
-        try {
-            return categoryApi.getCategories()
-                .executeAs(Response::thenReturn);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        return categoryApi.getCategories()
+            .executeAs(Response::thenReturn);
     }
 
     public CategoryResponse createCategory(CategoryRequest category) {
-        try {
-            categoryApi.storeCategory()
-                .body(category)
-                .executeAs(Response::thenReturn);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        return categoryApi.storeCategory()
+            .body(category)
+            .executeAs(Response::thenReturn);
     }
 
     public CategoryTreeResponse getCategoryTree(String categoryId) {
-        try {
-            categoryApi.updateCategory()
-                .categoryIdPath(categoryId)
-                .body(category)
-                .executeAs(Response::thenReturn);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        return categoryApi.getCategory()
+            .categoryIdPath(categoryId)
+            .executeAs(Response::thenReturn);
     }
 
-    public CategoryTreeResponse getCategory(Integer categoryId) {
-        try {
-            return categoryApi.getCategory()
-                .categoryIdPath(categoryId)
-                .executeAs(Response::thenReturn);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public void updateCategory(CategoryRequest category, String categoryId ) {
-        try {
-            categoryApi.updateCategory(categoryId, category);
-        } catch (ApiException e) {
-            e.printStackTrace();
-        }
+     public void updateCategory(CategoryRequest category, String categoryId ) {
+        categoryApi.updateCategory()
+            .categoryIdPath(categoryId)
+            .body(category)
+            .executeAs(Response::thenReturn);
     }
 
     public void deleteCategory(String categoryId) {
-        try {
-            categoryApi.deleteCategory()
-                .categoryIdPath(categoryId)
-                .execute(Response::thenReturn);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        categoryApi.deleteCategory()
+            .categoryIdPath(categoryId)
+            .execute(Response::thenReturn);
     }
-
 }
 

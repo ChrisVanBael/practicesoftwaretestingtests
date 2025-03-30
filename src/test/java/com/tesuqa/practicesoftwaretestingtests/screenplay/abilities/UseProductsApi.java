@@ -1,9 +1,11 @@
 package com.tesuqa.practicesoftwaretestingtests.screenplay.abilities;
 
-import com.practicesoftwaretesting.v5.client.ApiClient;
+import com.practicesoftwaretesting.client.v5.ApiClient;
 import com.practicesoftwaretesting.client.v5.api.ProductApi;
+import com.practicesoftwaretesting.client.v5.model.PaginatedProductResponse;
 import com.practicesoftwaretesting.client.v5.model.ProductRequest;
 import com.practicesoftwaretesting.client.v5.model.ProductResponse;
+import com.practicesoftwaretesting.client.v5.model.StoreProductResponse;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
@@ -63,74 +65,52 @@ public class UseProductsApi implements Ability {
         return "call the Products API at "+ baseUrl;
     }
 
-    public List<ProductResponse> getAllProducts(Integer brandId, Integer categoryId, String isRental) {
+    public List<ProductResponse> getAllProducts(String brandId, String categoryId, String isRental) {
         Integer lastPage = 0;
         List<ProductResponse> products = new ArrayList<>();
-        for (Integer page = lastPage; page <= lastPage; page++)
-            try {
-                InlineResponse2001 productResp = productApi.getProducts()
+        for (Integer page = lastPage; page <= lastPage; page++) {
+            PaginatedProductResponse productResp = productApi.getProducts()
                 .byBrandQuery(brandId)
                 .byCategoryQuery(categoryId)
                 .isRentalQuery(isRental)
+                .pageQuery(page)
                 .executeAs(Response::thenReturn);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-            }
+            lastPage = productResp.getLastPage();
+            products.addAll(productResp.getData());
+        }
         return products;
     }
 
     public void createProduct(ProductRequest product) {
-        try {
-            productApi.storeProduct()
-                .body(product)
-                .executeAs(Response::thenReturn);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        StoreProductResponse response = productApi.storeProduct()
+            .body(product)
+            .executeAs(Response::thenReturn);
+        int a = 0;
     }
 
     public void updateProduct(ProductRequest product, String productId ) {
-        try {
-            productApi.updateProduct()
-                .productIdPath(productId)
-                .body(product)
-                .executeAs(Response::thenReturn);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        productApi.updateProduct()
+            .productIdPath(productId)
+            .body(product)
+            .executeAs(Response::thenReturn);
     }
 
     public ProductResponse getProduct(String productId) {
-        try {
-            return productApi.getProduct()
-                .productIdPath(productId)
-                .executeAs(Response::thenReturn);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        return productApi.getProduct()
+            .productIdPath(productId)
+            .executeAs(Response::thenReturn);
     }
 
     public void deleteProduct(String productId) {
-        try {
-            productApi.deleteProduct()
-                .productIdPath(productId)
-                .execute(Response::thenReturn);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        productApi.deleteProduct()
+            .productIdPath(productId)
+            .execute(Response::thenReturn);
     }
 
     public List<ProductResponse> getRelatedProducts(String productId) {
-        try {
-            return productApi.getRelatedProducts()
-                .productIdPath(productId)
-                .executeAs(Response::thenReturn);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        return productApi.getRelatedProducts()
+            .productIdPath(productId)
+            .executeAs(Response::thenReturn);
     }
 
     public List<ProductResponse> search(String query) {
@@ -138,14 +118,12 @@ public class UseProductsApi implements Ability {
         Integer lastPage = 0;
 
         for (Integer page=0; page<=lastPage; page++) {
-            try {
-                InlineResponse2005 productResp = productApi.searchProduct(query, page);
-                lastPage = productResp.getLastPage();
-                products.addAll(productResp.getData());
-            } catch (ApiException e) {
-                e.printStackTrace();
-                return null;
-            }
+            PaginatedProductResponse productResp = productApi.searchProduct()
+                .pageQuery(query)
+                .pageQuery(page)
+                .executeAs(Response::thenReturn);
+            lastPage = productResp.getLastPage();
+            products.addAll(productResp.getData());
         }
         return products;
     }

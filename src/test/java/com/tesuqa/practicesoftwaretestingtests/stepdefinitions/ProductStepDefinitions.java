@@ -6,6 +6,7 @@ import com.tesuqa.practicesoftwaretestingtests.pages.HomePage;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseBrandsApi;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseCategoriesApi;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseProductsApi;
+import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheImages;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheName;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.web.*;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.web.NavigateTo;
@@ -13,7 +14,6 @@ import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheId;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheProducts;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api.AddProduct;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api.DeleteProduct;
-import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.web.NavigateTo;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
@@ -25,7 +25,6 @@ import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
 import net.serenitybdd.screenplay.actions.Open;
 import net.serenitybdd.screenplay.actors.OnStage;
-import net.serenitybdd.screenplay.actors.OnlineCast;
 import net.serenitybdd.screenplay.ensure.Ensure;
 import net.thucydides.model.util.EnvironmentVariables;
 import org.openqa.selenium.WebDriver;
@@ -37,23 +36,17 @@ import java.util.stream.Collectors;
 import static net.serenitybdd.screenplay.GivenWhenThen.seeThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class ProductStepDefinitions {
 
     private EnvironmentVariables environmentVariables;
     private Actor myActor;
-    private WebDriver browser;
 
-    @Before
-    public void setTheStage() {
-        myActor = OnStage.theActorCalled("myActor");
-        String theRestApiBaseUrl = EnvironmentSpecificConfiguration
-                .from(environmentVariables).getProperty("api.base.url");
-        myActor.whoCan(UseProductsApi.at(theRestApiBaseUrl));
-        myActor.whoCan(UseBrandsApi.at(theRestApiBaseUrl));
-        myActor.whoCan(UseCategoriesApi.at(theRestApiBaseUrl));
-        myActor.whoCan(BrowseTheWeb.with(browser));
+    @Before(order = 10)
+    public void prepareBrandActor() {
+        // Access the existing actor via OnStage
+        // No need to set API abilities again as they're already added in Hooks
+        myActor = OnStage.theActorInTheSpotlight();
     }
 
     /**
@@ -122,7 +115,7 @@ public class ProductStepDefinitions {
         newProduct.setBrandId(myActor.asksFor(TheId.ofBrand(productList.get(4))));
         newProduct.setIsLocationOffer(Boolean.parseBoolean(productList.get(5)));
         newProduct.setIsRental(Boolean.parseBoolean(productList.get(6)));
-        newProduct.setProductImageId(Integer.parseInt(productList.get(7)));
+        newProduct.setProductImageId(productList.get(7));
         myActor.remember("New Product", newProduct);
 
         // verify the product does not exist yet
@@ -158,8 +151,11 @@ public class ProductStepDefinitions {
         newProduct.setPrice(new BigDecimal(productList.get(2)));
         newProduct.setCategoryId(myActor.recall("CategoryId"));
         newProduct.setBrandId(myActor.recall("BrandId"));
-        newProduct.setProductImageId(Integer.parseInt(productList.get(3)));
-
+        newProduct.setIsLocationOffer(Boolean.parseBoolean(productList.get(3)));
+        newProduct.setIsRental(Boolean.parseBoolean(productList.get(4)));
+        // Data is reloaded every hour on online system, so IDs also change
+        String imageId = myActor.asksFor(TheImages.knownByTheSystem()).get(0).getId();
+        newProduct.setProductImageId(imageId);
         assureProductDoesNotExist(newProduct.getName(), newProduct.getBrandId());
         myActor.attemptsTo(AddProduct.withProduct(newProduct));
         myActor.remember("New Product", newProduct);

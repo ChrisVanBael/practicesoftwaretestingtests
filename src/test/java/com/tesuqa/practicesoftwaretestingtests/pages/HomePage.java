@@ -44,4 +44,8 @@ public class HomePage extends PageObject {
             .the("productnames")
             .locatedBy("//h5[@data-test='product-name']");
 
+    public static Target NEXT_PAGE_BUTTON = Target
+        .the("next page button")
+        .locatedBy("//a[@aria-label='Next']/parent::li");
+
 }

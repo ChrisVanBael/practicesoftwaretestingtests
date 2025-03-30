@@ -1,10 +1,10 @@
 package com.tesuqa.practicesoftwaretestingtests.screenplay.abilities;
 
 
-import com.practicesoftwaretesting.v1.client.ApiClient;
-import com.practicesoftwaretesting.client.v1.api.BrandApi;
-import com.practicesoftwaretesting.client.v1.model.BrandRequest;
-import com.practicesoftwaretesting.client.v1.model.BrandResponse;
+import com.practicesoftwaretesting.client.v5.ApiClient;
+import com.practicesoftwaretesting.client.v5.api.BrandApi;
+import com.practicesoftwaretesting.client.v5.model.BrandRequest;
+import com.practicesoftwaretesting.client.v5.model.BrandResponse;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
@@ -74,55 +74,34 @@ public class UseBrandsApi implements Ability {
     }
 
     public BrandResponse createBrand(BrandRequest brand) {
-        try {
-            brandApi.storeBrand()
-                .body(brand)
-                .executeAs(Response::thenReturn);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        return brandApi.storeBrand()
+            .body(brand)
+            .executeAs(Response::thenReturn);
     }
 
     public void updateBrand(BrandRequest brand, String brandId ) {
-        try {
-            brandApi.updateBrand()
-                .body(brand)
-                .brandIdPath(brandId)
-                .executeAs(Response::thenReturn);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        brandApi.updateBrand()
+            .body(brand)
+            .brandIdPath(brandId)
+            .executeAs(Response::thenReturn);
     }
 
     public BrandResponse getBrand(String brandId) {
-        try {
-            return brandApi.getBrand()
-                .brandIdPath(brandId)
-                .executeAs(Response::thenReturn);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        return brandApi.getBrand()
+            .brandIdPath(brandId)
+            .executeAs(Response::thenReturn);
     }
 
     public void deleteBrand(String brandId) {
-        try {
-            brandApi.deleteBrand()
-                .brandIdPath(brandId)
-                .execute(Response::thenReturn);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        brandApi.deleteBrand()
+            .brandIdPath(brandId)
+            .execute(Response::thenReturn);
     }
 
     public List<BrandResponse> searchBrand(String query) {
-        try {
-            return brandApi.searchBrand(query);
-        } catch (ApiException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return brandApi.searchBrand()
+            .qQuery(query)
+            .executeAs(Response::thenReturn);
     }
 
 }
