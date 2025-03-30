@@ -15,46 +15,45 @@ import net.serenitybdd.screenplay.Actor;
 public class UseUsersApi implements Ability {
 
     private String baseUrl;
-    private ApiClient apiClient;
     private UserApi userApi;
 
 
     private UseUsersApi(String baseUrl) {
-        // Create a custom configuration with the specified base URL
-        ApiClient.Config config = ApiClient.Config.apiConfig()
-            .reqSpecSupplier(() -> new RequestSpecBuilder()
-                .setBaseUri(baseUrl)
-                .setConfig(RestAssuredConfig.config()
-                    .objectMapperConfig(ObjectMapperConfig.objectMapperConfig()
-                        .defaultObjectMapperType(ObjectMapperType.GSON))
-                )
-            );
+        this.baseUrl = baseUrl;
 
-        // Create the API client with the custom configuration
-        this.apiClient = ApiClient.api(config);
-
-        // Get the UsersApi from the client
-        this.userApi = apiClient.user();
+        // Initialize the ApiClientManager with the base URL if not already initialized
+        this.userApi = ApiClientManager.getInstance(baseUrl).getApiClient().user();
     }
 
     /**
-     * Used to access the Actor's ability to UseUsersApi from within the Interaction classes, such as GET or PUT
-     * @param actor actor to use
-     * @return UseUsersApi
-     */
-    public static UseUsersApi as(Actor actor) {
-        return actor.abilityTo(UseUsersApi.class);
-    }
-
-    /**
-     * Ability to Use the Products API at a specified URL
+     * Ability to Use the Users API at a specified URL
      * @param baseUrl URL to use
-     * @return UseUsersApi
+     * @return UseProductsAPI
      */
     public static UseUsersApi at(String baseUrl) {
         return new UseUsersApi(baseUrl);
     }
 
+    /**
+     * Used to access the Actor's ability to UseProductsApi from within the Interaction classes, such as GET or PUT
+     * @param actor actor to use
+     * @return UseProductsApi
+     */
+    public static UseUsersApi as(Actor actor) {
+        return actor.abilityTo(UseUsersApi.class);
+    }
+
+    public String toString() {
+        return "call the Users API at "+ baseUrl;
+    }
+
+    /**
+     * Refresh the API client - call this if the token has been updated
+     */
+    public UseUsersApi refreshApiClient() {
+        this.userApi = ApiClientManager.getInstance(baseUrl).getApiClient().user();
+        return this;
+    }
     public String login(AccountRequest login) {
         TokenResponse response = userApi.loginCustomer()
             .body(login)

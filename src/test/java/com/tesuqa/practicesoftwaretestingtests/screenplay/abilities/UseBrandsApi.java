@@ -19,26 +19,14 @@ import java.util.List;
 public class UseBrandsApi implements Ability {
 
     private String baseUrl;
-    private ApiClient apiClient;
     private BrandApi brandApi;
 
 
     private UseBrandsApi(String baseUrl) {
-        // Create a custom configuration with the specified base URL
-        ApiClient.Config config = ApiClient.Config.apiConfig()
-            .reqSpecSupplier(() -> new RequestSpecBuilder()
-                .setBaseUri(baseUrl)
-                .setConfig(RestAssuredConfig.config()
-                    .objectMapperConfig(ObjectMapperConfig.objectMapperConfig()
-                        .defaultObjectMapperType(ObjectMapperType.GSON))
-                )
-            );
+        this.baseUrl = baseUrl;
 
-        // Create the API client with the custom configuration
-        this.apiClient = ApiClient.api(config);
-
-        // Get the BrandApi from the client
-        this.brandApi = apiClient.brand();
+        // Get the BrandApi from the shared ApiClient
+        this.brandApi = ApiClientManager.getInstance(baseUrl).getApiClient().brand();
     }
 
     /**
@@ -63,14 +51,17 @@ public class UseBrandsApi implements Ability {
         return "call the Brands API at "+ baseUrl;
     }
 
+    /**
+     * Refresh the API client - call this if the token has been updated
+     */
+    public UseBrandsApi refreshApiClient() {
+        this.brandApi = ApiClientManager.getInstance(baseUrl).getApiClient().brand();
+        return this;
+    }
+
     public List<BrandResponse> getAllBrands() {
-        try {
-            return brandApi.getBrands()
-                .executeAs(Response::thenReturn);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        return brandApi.getBrands()
+            .executeAs(Response::thenReturn);
     }
 
     public BrandResponse createBrand(BrandRequest brand) {

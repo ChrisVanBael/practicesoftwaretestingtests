@@ -21,26 +21,14 @@ import java.util.List;
 public class UseProductsApi implements Ability {
 
     private String baseUrl;
-    private ApiClient apiClient;
     private ProductApi productApi;
 
 
     private UseProductsApi(String baseUrl) {
-        // Create a custom configuration with the specified base URL
-        ApiClient.Config config = ApiClient.Config.apiConfig()
-            .reqSpecSupplier(() -> new RequestSpecBuilder()
-                .setBaseUri(baseUrl)
-                .setConfig(RestAssuredConfig.config()
-                    .objectMapperConfig(ObjectMapperConfig.objectMapperConfig()
-                        .defaultObjectMapperType(ObjectMapperType.GSON))
-                )
-            );
+        this.baseUrl = baseUrl;
 
-        // Create the API client with the custom configuration
-        this.apiClient = ApiClient.api(config);
-
-        // Get the BrandApi from the client
-        this.productApi = apiClient.product();
+        // Initialize the ApiClientManager with the base URL if not already initialized
+        this.productApi = ApiClientManager.getInstance(baseUrl).getApiClient().product();
     }
 
     /**
@@ -63,6 +51,14 @@ public class UseProductsApi implements Ability {
 
     public String toString() {
         return "call the Products API at "+ baseUrl;
+    }
+
+    /**
+     * Refresh the API client - call this if the token has been updated
+     */
+    public UseProductsApi refreshApiClient() {
+        this.productApi = ApiClientManager.getInstance(baseUrl).getApiClient().product();
+        return this;
     }
 
     public List<ProductResponse> getAllProducts(String brandId, String categoryId, String isRental) {

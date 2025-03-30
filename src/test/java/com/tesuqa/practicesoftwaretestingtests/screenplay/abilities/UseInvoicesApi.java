@@ -2,11 +2,8 @@ package com.tesuqa.practicesoftwaretestingtests.screenplay.abilities;
 
 import com.practicesoftwaretesting.client.v5.ApiClient;
 import com.practicesoftwaretesting.client.v5.api.InvoiceApi;
-
 import com.practicesoftwaretesting.client.v5.model.InvoiceResponse;
 import com.practicesoftwaretesting.client.v5.model.PaginatedInvoiceResponse;
-import com.practicesoftwaretesting.client.v5.model.PaginatedProductResponse;
-import com.practicesoftwaretesting.client.v5.model.ProductResponse;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
@@ -20,26 +17,14 @@ import java.util.List;
 
 public class UseInvoicesApi implements Ability {
     private String baseUrl;
-    private ApiClient apiClient;
     private InvoiceApi invoiceApi;
 
 
     private UseInvoicesApi(String baseUrl) {
-        // Create a custom configuration with the specified base URL
-        ApiClient.Config config = ApiClient.Config.apiConfig()
-            .reqSpecSupplier(() -> new RequestSpecBuilder()
-                .setBaseUri(baseUrl)
-                .setConfig(RestAssuredConfig.config()
-                    .objectMapperConfig(ObjectMapperConfig.objectMapperConfig()
-                        .defaultObjectMapperType(ObjectMapperType.GSON))
-                )
-            );
+        this.baseUrl = baseUrl;
 
-        // Create the API client with the custom configuration
-        this.apiClient = ApiClient.api(config);
-
-        // Get the BrandApi from the client
-        this.invoiceApi = apiClient.invoice();
+        // Initialize the ApiClientManager with the base URL if not already initialized
+        this.invoiceApi = ApiClientManager.getInstance(baseUrl).getApiClient().invoice();
     }
 
     /**
@@ -60,13 +45,15 @@ public class UseInvoicesApi implements Ability {
         return new UseInvoicesApi(baseUrl);
     }
 
+    public String toString() {
+        return "call the Invoices API at "+ baseUrl;
+    }
+
     /**
-     * Set the access token for API requests
-     * @param token Access token
+     * Refresh the API client - call this if the token has been updated
      */
-    public UseInvoicesApi setAccessToken(String token) {
-        // TODO: how to set the access token?
-        // apiClient.setAccessToken(token);
+    public UseInvoicesApi refreshApiClient() {
+        this.invoiceApi = ApiClientManager.getInstance(baseUrl).getApiClient().invoice();
         return this;
     }
 

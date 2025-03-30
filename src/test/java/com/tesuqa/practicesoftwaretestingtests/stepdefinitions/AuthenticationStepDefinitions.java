@@ -1,5 +1,6 @@
 package com.tesuqa.practicesoftwaretestingtests.stepdefinitions;
 
+import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.ApiClientManager;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseUsersApi;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api.Login;
 import io.cucumber.java.Before;
@@ -26,6 +27,7 @@ public class AuthenticationStepDefinitions {
     public void theUserIsLoggedInWithUsernameAndPassword(String email, String password) {
         myActor.attemptsTo(Login.withEmailAndPassword(email, password));
         String token = myActor.recall("token");
+        ApiClientManager.as(myActor).setAccessToken(token);
         System.out.println(token);
     }
 }

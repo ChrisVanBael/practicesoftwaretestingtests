@@ -20,26 +20,14 @@ import java.util.List;
 public class UseCategoriesApi implements Ability {
 
     private String baseUrl;
-    private ApiClient apiClient;
     private CategoryApi categoryApi;
 
 
     private UseCategoriesApi(String baseUrl) {
-        // Create a custom configuration with the specified base URL
-        ApiClient.Config config = ApiClient.Config.apiConfig()
-            .reqSpecSupplier(() -> new RequestSpecBuilder()
-                .setBaseUri(baseUrl)
-                .setConfig(RestAssuredConfig.config()
-                    .objectMapperConfig(ObjectMapperConfig.objectMapperConfig()
-                        .defaultObjectMapperType(ObjectMapperType.GSON))
-                )
-            );
+        this.baseUrl = baseUrl;
 
-        // Create the API client with the custom configuration
-        this.apiClient = ApiClient.api(config);
-
-        // Get the BrandApi from the client
-        this.categoryApi = apiClient.category();
+        // Get the BrandApi from the shared ApiClient
+        this.categoryApi = ApiClientManager.getInstance(baseUrl).getApiClient().category();
     }
 
     /**
@@ -62,6 +50,14 @@ public class UseCategoriesApi implements Ability {
 
     public String toString() {
         return "call the Categories API at "+ baseUrl;
+    }
+
+    /**
+     * Refresh the API client - call this if the token has been updated
+     */
+    public UseCategoriesApi refreshApiClient() {
+        this.categoryApi = ApiClientManager.getInstance(baseUrl).getApiClient().category();
+        return this;
     }
 
     public List<CategoryTreeResponse> getAllCategoryTrees(String categorySlug) {

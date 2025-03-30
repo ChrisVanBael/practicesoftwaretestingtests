@@ -17,26 +17,14 @@ import java.util.List;
 public class UseImagesApi implements Ability {
 
     private String baseUrl;
-    private ApiClient apiClient;
     private ImageApi imagesApi;
 
 
     private UseImagesApi(String baseUrl) {
-        // Create a custom configuration with the specified base URL
-        ApiClient.Config config = ApiClient.Config.apiConfig()
-            .reqSpecSupplier(() -> new RequestSpecBuilder()
-                .setBaseUri(baseUrl)
-                .setConfig(RestAssuredConfig.config()
-                    .objectMapperConfig(ObjectMapperConfig.objectMapperConfig()
-                        .defaultObjectMapperType(ObjectMapperType.GSON))
-                )
-            );
+        this.baseUrl = baseUrl;
 
-        // Create the API client with the custom configuration
-        this.apiClient = ApiClient.api(config);
-
-        // Get the BrandApi from the client
-        this.imagesApi = apiClient.image();
+        // Get the BrandApi from the shared ApiClient
+        this.imagesApi = ApiClientManager.getInstance(baseUrl).getApiClient().image();
     }
 
     /**
@@ -61,6 +49,13 @@ public class UseImagesApi implements Ability {
         return "call the Images API at "+ baseUrl;
     }
 
+    /**
+     * Refresh the API client - call this if the token has been updated
+     */
+    public UseImagesApi refreshApiClient() {
+        this.imagesApi = ApiClientManager.getInstance(baseUrl).getApiClient().image();
+        return this;
+    }
     public List<ImageResponse> getAllImages() {
         return imagesApi.getImages()
             .executeAs(Response::thenReturn);

@@ -16,7 +16,7 @@ public class TheInvoices {
     public static Question<List<InvoiceResponse>> knownByTheSystem() {
         return Question.about("the invoices known by the system")
                 .answeredBy(
-                        actor -> UseInvoicesApi.as(actor).setAccessToken(actor.recall("token")).getAllInvoices()
+                        actor -> UseInvoicesApi.as(actor).getAllInvoices()
                 );
     }
 }
