@@ -74,13 +74,14 @@ public class ProductStepDefinitions {
      * @param price price of the product
      * @param category name of the category
      * @param brandName name of the brand
-     * @param imageId ID of the image
      */
-    @When("I add product with {string}, {string}, {string}, {string}, {string}, {string}, {string} and image {string}")
+    @When("I add product with {string}, {string}, {string}, {string}, {string}, {string} and {string}")
     public void addProductWithValues(String productName, String description, String price, String category,
-                                     String brandName, String isLocationOffer, String isRental, String imageId) {
+                                     String brandName, String isLocationOffer, String isRental) {
         Boolean location = Boolean.parseBoolean(isLocationOffer);
         Boolean rental = Boolean.parseBoolean(isRental);
+        // Data is reloaded every hour on online system, so IDs also change
+        String imageId = myActor.asksFor(TheImages.knownByTheSystem()).get(0).getId();
         myActor.attemptsTo(AddProduct.withValues(productName, description, price, category, brandName, imageId, location, rental));
     }
 
@@ -115,7 +116,9 @@ public class ProductStepDefinitions {
         newProduct.setBrandId(myActor.asksFor(TheId.ofBrand(productList.get(4))));
         newProduct.setIsLocationOffer(Boolean.parseBoolean(productList.get(5)));
         newProduct.setIsRental(Boolean.parseBoolean(productList.get(6)));
-        newProduct.setProductImageId(productList.get(7));
+        // Data is reloaded every hour on online system, so IDs also change
+        String imageId = myActor.asksFor(TheImages.knownByTheSystem()).get(0).getId();
+        newProduct.setProductImageId(imageId);
         myActor.remember("New Product", newProduct);
 
         // verify the product does not exist yet
