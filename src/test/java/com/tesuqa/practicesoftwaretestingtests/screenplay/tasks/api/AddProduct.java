@@ -1,6 +1,6 @@
 package com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api;
 
-import com.practicesoftwaretesting.client.model.ProductRequest;
+import com.practicesoftwaretesting.client.v5.model.ProductRequest;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseProductsApi;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheId;
 import net.serenitybdd.screenplay.Performable;
@@ -19,9 +19,12 @@ public class AddProduct {
      * @param categoryName name of the category of the product
      * @param brandName name of the brand of the product
      * @param imageId id of the image to use
+     * @param isLocationOffer if the product can be offered for locations
+     * @param isRental if the product can be rented
      * @return the task
      */
-    public static Performable withValues(String name, String description, String price, String categoryName, String brandName, String imageId) {
+    public static Performable withValues(String name, String description, String price, String categoryName,
+                                         String brandName, String imageId, Boolean isLocationOffer, Boolean isRental) {
         return Task.where(
                 actor -> {
                     ProductRequest newProduct = new ProductRequest();
@@ -30,7 +33,9 @@ public class AddProduct {
                     newProduct.setPrice(new BigDecimal(price));
                     newProduct.setCategoryId(actor.asksFor(TheId.ofCategory(categoryName)));
                     newProduct.setBrandId(actor.asksFor(TheId.ofBrand(brandName)));
-                    newProduct.setProductImageId(Integer.parseInt(imageId));
+                    newProduct.setProductImageId(imageId);
+                    newProduct.setIsLocationOffer(isLocationOffer);
+                    newProduct.setIsRental(isRental);
                     UseProductsApi.as(actor).createProduct(newProduct);
                 }
         );
@@ -43,7 +48,7 @@ public class AddProduct {
      */
     public static Performable withProduct(ProductRequest newProduct){
         return Task.where(
-                actor -> UseProductsApi.as(actor).createProduct(newProduct)
+            actor -> UseProductsApi.as(actor).createProduct(newProduct)
         );
     }
 }

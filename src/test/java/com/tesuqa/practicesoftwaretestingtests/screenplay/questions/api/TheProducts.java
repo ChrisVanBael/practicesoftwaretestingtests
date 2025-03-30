@@ -1,6 +1,6 @@
 package com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api;
 
-import com.practicesoftwaretesting.client.model.ProductResponse;
+import com.practicesoftwaretesting.client.v5.model.ProductResponse;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseProductsApi;
 import net.serenitybdd.screenplay.Question;
 
@@ -15,7 +15,7 @@ public class TheProducts {
     public static Question<List<ProductResponse>> knownByTheSystem() {
         return Question.about("the products known by the system")
                 .answeredBy(
-                        actor -> UseProductsApi.as(actor).getAllProducts(null, null, null, null, null)
+                        actor -> UseProductsApi.as(actor).getAllProducts(null, null, null)
                 );
     }
 
@@ -38,7 +38,7 @@ public class TheProducts {
     public static Question<List<ProductResponse>> ofBrand(String brandId) {
         return Question.about("the products of brand")
                 .answeredBy(
-                        actor -> UseProductsApi.as(actor).getAllProducts(brandId, null, null, null, null)
+                        actor -> UseProductsApi.as(actor).getAllProducts(brandId, null, null)
                 );
     }
 
@@ -49,7 +49,7 @@ public class TheProducts {
     public static Question<List<ProductResponse>> inCategory(String categoryId) {
         return Question.about("the products in category")
                 .answeredBy(
-                        actor -> UseProductsApi.as(actor).getAllProducts(null, categoryId, null, null, null)
+                        actor -> UseProductsApi.as(actor).getAllProducts(null, categoryId, null)
                 );
     }
 
@@ -60,7 +60,7 @@ public class TheProducts {
     public static Question<List<ProductResponse>> thatAreRental(String isRental) {
         return Question.about("the products that are rental")
                 .answeredBy(
-                        actor -> UseProductsApi.as(actor).getAllProducts(null, null, isRental, null, null)
+                        actor -> UseProductsApi.as(actor).getAllProducts(null, null, isRental)
                 );
     }
 
@@ -71,7 +71,7 @@ public class TheProducts {
     public static Question<List<ProductResponse>> filteredAccording(String brandId, String categoryId, String isRental) {
         return Question.about("the products that are filtered")
                 .answeredBy(
-                        actor -> UseProductsApi.as(actor).getAllProducts(brandId, categoryId, isRental, null, null)
+                        actor -> UseProductsApi.as(actor).getAllProducts(brandId, categoryId, isRental)
                 );
     }
 }

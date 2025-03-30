@@ -1,8 +1,9 @@
 package com.tesuqa.practicesoftwaretestingtests.stepdefinitions;
 
-import com.practicesoftwaretesting.client.model.ImageResponse;
-import com.practicesoftwaretesting.client.model.ProductRequest;
-import com.practicesoftwaretesting.client.model.ProductResponse;
+
+import com.practicesoftwaretesting.client.v5.model.ImageResponse;
+import com.practicesoftwaretesting.client.v5.model.ProductRequest;
+import com.practicesoftwaretesting.client.v5.model.ProductResponse;
 import com.tesuqa.practicesoftwaretestingtests.pages.HomePage;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseBrandsApi;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseCategoriesApi;
@@ -39,12 +40,11 @@ public class ImageStepDefinitions {
     private Actor apiActor;
     private WebDriver browser;
 
-    @Before
-    public void setTheStage() {
-        apiActor = OnStage.theActorCalled("apiActor");
-        String theRestApiBaseUrl = EnvironmentSpecificConfiguration
-                .from(environmentVariables).getProperty("api.base.url");
-        apiActor.whoCan(UseImagesApi.at(theRestApiBaseUrl));
+    @Before(order = 10)
+    public void prepareBrandActor() {
+        // Access the existing actor via OnStage
+        // No need to set API abilities again as they're already added in Hooks
+        myActor = OnStage.theActorInTheSpotlight();
     }
 
 

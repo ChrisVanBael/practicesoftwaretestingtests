@@ -31,7 +31,6 @@ public class TheName {
      * @return name of the category
      */
     public static Question<String> ofCategory(String id) {
-
         return Question.about("the name of category with id " + id)
                 .answeredBy(
                         actor -> UseCategoriesApi.as(actor).getAllCategories()

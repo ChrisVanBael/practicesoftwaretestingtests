@@ -1,6 +1,6 @@
 package com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api;
 
-import com.practicesoftwaretesting.client.model.CategoryResponse;
+import com.practicesoftwaretesting.client.v5.model.CategoryResponse;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseCategoriesApi;
 import net.serenitybdd.screenplay.Performable;
 import net.serenitybdd.screenplay.Task;
@@ -23,6 +23,20 @@ public class DeleteCategory {
                             .findFirst().get();
                     UseCategoriesApi.as(actor).deleteCategory(id);
                 }
+        );
+    }
+
+
+    /**
+     * Deletes the Category with id
+     * @param id id of the category
+     * @return the task
+     */
+    public static Performable withId(String id) {
+        return Task.where(
+            actor -> {
+                UseCategoriesApi.as(actor).deleteCategory(id);
+            }
         );
     }
 }

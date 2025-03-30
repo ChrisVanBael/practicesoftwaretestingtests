@@ -1,11 +1,15 @@
 package com.tesuqa.practicesoftwaretestingtests.screenplay.abilities;
 
-import com.practicesoftwaretesting.client.ApiClient;
-import com.practicesoftwaretesting.client.ApiException;
-import com.practicesoftwaretesting.client.api.BrandApi;
 
-import com.practicesoftwaretesting.client.model.BrandRequest;
-import com.practicesoftwaretesting.client.model.BrandResponse;
+import com.practicesoftwaretesting.client.v5.ApiClient;
+import com.practicesoftwaretesting.client.v5.api.BrandApi;
+import com.practicesoftwaretesting.client.v5.model.BrandRequest;
+import com.practicesoftwaretesting.client.v5.model.BrandResponse;
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.config.ObjectMapperConfig;
+import io.restassured.config.RestAssuredConfig;
+import io.restassured.mapper.ObjectMapperType;
+import io.restassured.response.Response;
 import net.serenitybdd.screenplay.Ability;
 import net.serenitybdd.screenplay.Actor;
 
@@ -15,14 +19,26 @@ import java.util.List;
 public class UseBrandsApi implements Ability {
 
     private String baseUrl;
-    private ApiClient apiClient = new ApiClient();
-    private BrandApi brandApi = new BrandApi();
+    private ApiClient apiClient;
+    private BrandApi brandApi;
 
 
     private UseBrandsApi(String baseUrl) {
-        this.baseUrl = baseUrl;
-        apiClient.setBasePath(baseUrl);
-        brandApi.setApiClient(apiClient);
+        // Create a custom configuration with the specified base URL
+        ApiClient.Config config = ApiClient.Config.apiConfig()
+            .reqSpecSupplier(() -> new RequestSpecBuilder()
+                .setBaseUri(baseUrl)
+                .setConfig(RestAssuredConfig.config()
+                    .objectMapperConfig(ObjectMapperConfig.objectMapperConfig()
+                        .defaultObjectMapperType(ObjectMapperType.GSON))
+                )
+            );
+
+        // Create the API client with the custom configuration
+        this.apiClient = ApiClient.api(config);
+
+        // Get the BrandApi from the client
+        this.brandApi = apiClient.brand();
     }
 
     /**
@@ -49,53 +65,43 @@ public class UseBrandsApi implements Ability {
 
     public List<BrandResponse> getAllBrands() {
         try {
-            return brandApi.getBrands();
-        } catch (ApiException e) {
+            return brandApi.getBrands()
+                .executeAs(Response::thenReturn);
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    public void createBrand(BrandRequest brand) {
-        try {
-            brandApi.storeBrand(brand);
-        } catch (ApiException e) {
-            e.printStackTrace();
-        }
+    public BrandResponse createBrand(BrandRequest brand) {
+        return brandApi.storeBrand()
+            .body(brand)
+            .executeAs(Response::thenReturn);
     }
 
     public void updateBrand(BrandRequest brand, String brandId ) {
-        try {
-            brandApi.updateBrand(brand, brandId);
-        } catch (ApiException e) {
-            e.printStackTrace();
-        }
+        brandApi.updateBrand()
+            .body(brand)
+            .brandIdPath(brandId)
+            .executeAs(Response::thenReturn);
     }
 
     public BrandResponse getBrand(String brandId) {
-        try {
-            return brandApi.getBrand(brandId);
-        } catch (ApiException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return brandApi.getBrand()
+            .brandIdPath(brandId)
+            .executeAs(Response::thenReturn);
     }
 
     public void deleteBrand(String brandId) {
-        try {
-            brandApi.deleteBrand(brandId);
-        } catch (ApiException e) {
-            e.printStackTrace();
-        }
+        brandApi.deleteBrand()
+            .brandIdPath(brandId)
+            .execute(Response::thenReturn);
     }
 
     public List<BrandResponse> searchBrand(String query) {
-        try {
-            return brandApi.searchBrand(query);
-        } catch (ApiException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return brandApi.searchBrand()
+            .qQuery(query)
+            .executeAs(Response::thenReturn);
     }
 
 }

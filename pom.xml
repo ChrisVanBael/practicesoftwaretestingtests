@@ -38,9 +38,15 @@
     </repositories>
     <dependencies>
         <dependency>
-            <groupId>com.practicesoftwaretesting</groupId>
-            <artifactId>practicesoftwaretesting-javaclient</artifactId>
-            <version>0.5.0</version>
+            <groupId>io.testsmith.practicesoftwaretesting</groupId>
+            <artifactId>v5-client</artifactId>
+            <version>0.0.50</version>
+        </dependency>
+        <dependency>
+            <groupId>io.testsmith.practicesoftwaretesting</groupId>
+            <artifactId>api-client</artifactId>
+            <version>0.0.11</version>
+            <type>pom</type>
         </dependency>
         <dependency>
             <groupId>net.serenity-bdd</groupId>

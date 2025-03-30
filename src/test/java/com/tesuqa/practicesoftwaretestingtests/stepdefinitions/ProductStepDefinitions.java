@@ -1,18 +1,19 @@
 package com.tesuqa.practicesoftwaretestingtests.stepdefinitions;
 
-import com.practicesoftwaretesting.client.model.ProductRequest;
-import com.practicesoftwaretesting.client.model.ProductResponse;
+import com.practicesoftwaretesting.client.v5.model.ProductRequest;
+import com.practicesoftwaretesting.client.v5.model.ProductResponse;
 import com.tesuqa.practicesoftwaretestingtests.pages.HomePage;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseBrandsApi;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseCategoriesApi;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseProductsApi;
+import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheImages;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheName;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.web.*;
+import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.web.NavigateTo;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheId;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheProducts;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api.AddProduct;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api.DeleteProduct;
-import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.web.NavigateTo;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
@@ -24,7 +25,6 @@ import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
 import net.serenitybdd.screenplay.actions.Open;
 import net.serenitybdd.screenplay.actors.OnStage;
-import net.serenitybdd.screenplay.actors.OnlineCast;
 import net.serenitybdd.screenplay.ensure.Ensure;
 import net.thucydides.model.util.EnvironmentVariables;
 import org.openqa.selenium.WebDriver;
@@ -36,24 +36,17 @@ import java.util.stream.Collectors;
 import static net.serenitybdd.screenplay.GivenWhenThen.seeThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class ProductStepDefinitions {
 
     private EnvironmentVariables environmentVariables;
     private Actor myActor;
-    private WebDriver browser;
 
-    @Before
-    public void setTheStage() {
-        Actor apiActor = OnStage.theActorCalled("apiActor");
-        String theRestApiBaseUrl = EnvironmentSpecificConfiguration
-                .from(environmentVariables).getProperty("api.base.url");
-        myActor = Actor.named("MyActor");
-        myActor.whoCan(UseProductsApi.at(theRestApiBaseUrl));
-        myActor.whoCan(UseBrandsApi.at(theRestApiBaseUrl));
-        myActor.whoCan(UseCategoriesApi.at(theRestApiBaseUrl));
-        myActor.whoCan(BrowseTheWeb.with(browser));
+    @Before(order = 10)
+    public void prepareBrandActor() {
+        // Access the existing actor via OnStage
+        // No need to set API abilities again as they're already added in Hooks
+        myActor = OnStage.theActorInTheSpotlight();
     }
 
     /**
@@ -83,9 +76,12 @@ public class ProductStepDefinitions {
      * @param brandName name of the brand
      * @param imageId ID of the image
      */
-    @When("I add product with {string}, {string}, {string}, {string}, {string} and image {string}")
-    public void addProductWithValues(String productName, String description, String price, String category, String brandName, String imageId) {
-        myActor.attemptsTo(AddProduct.withValues(productName, description, price, category, brandName, imageId));
+    @When("I add product with {string}, {string}, {string}, {string}, {string}, {string}, {string} and image {string}")
+    public void addProductWithValues(String productName, String description, String price, String category,
+                                     String brandName, String isLocationOffer, String isRental, String imageId) {
+        Boolean location = Boolean.parseBoolean(isLocationOffer);
+        Boolean rental = Boolean.parseBoolean(isRental);
+        myActor.attemptsTo(AddProduct.withValues(productName, description, price, category, brandName, imageId, location, rental));
     }
 
     /**
@@ -117,17 +113,13 @@ public class ProductStepDefinitions {
         newProduct.setPrice(new BigDecimal(productList.get(2)));
         newProduct.setCategoryId(myActor.asksFor(TheId.ofCategory(productList.get(3))));
         newProduct.setBrandId(myActor.asksFor(TheId.ofBrand(productList.get(4))));
-        newProduct.setProductImageId(Integer.parseInt(productList.get(5)));
+        newProduct.setIsLocationOffer(Boolean.parseBoolean(productList.get(5)));
+        newProduct.setIsRental(Boolean.parseBoolean(productList.get(6)));
+        newProduct.setProductImageId(productList.get(7));
         myActor.remember("New Product", newProduct);
 
         // verify the product does not exist yet
-        List<String> allProductNames = myActor.asksFor(TheProducts.ofBrand(newProduct.getBrandId()))
-                .stream()
-                .map(ProductResponse::getName)
-                .collect(Collectors.toList());
-        if (allProductNames.contains(newProduct.getName())) {
-            myActor.attemptsTo(DeleteProduct.withName(newProduct.getName()));
-        }
+        assureProductDoesNotExist(newProduct.getName(), newProduct.getBrandId());
     }
 
     /**
@@ -140,6 +132,35 @@ public class ProductStepDefinitions {
         ProductRequest newProduct = myActor.recall("New Product");
         myActor.attemptsTo(AddProduct.withProduct(newProduct));
     }
+
+
+    /**
+     * Verifies the product name doesn't exist yet. If it exists, deletes it </b>
+     * Then add the product via the API
+     * @param dt DataTable with the fields for a ProductRequest <br>
+     * <b>Memory Read</b>: "CategoryId", "BrandId" <br>
+     * <b>Memory Write</b>: "New Product" <br>
+     */
+    @Given("I add following new product for this brand and category")
+    public void addProductForBrandAndCategory(DataTable dt) {
+        // create a ProductRequest and remember it in the memory of the actor
+        List<String> productList = dt.cells().stream().skip(1).findFirst().get();
+        ProductRequest newProduct = new ProductRequest();
+        newProduct.setName(productList.get(0));
+        newProduct.setDescription(productList.get(1));
+        newProduct.setPrice(new BigDecimal(productList.get(2)));
+        newProduct.setCategoryId(myActor.recall("CategoryId"));
+        newProduct.setBrandId(myActor.recall("BrandId"));
+        newProduct.setIsLocationOffer(Boolean.parseBoolean(productList.get(3)));
+        newProduct.setIsRental(Boolean.parseBoolean(productList.get(4)));
+        // Data is reloaded every hour on online system, so IDs also change
+        String imageId = myActor.asksFor(TheImages.knownByTheSystem()).get(0).getId();
+        newProduct.setProductImageId(imageId);
+        assureProductDoesNotExist(newProduct.getName(), newProduct.getBrandId());
+        myActor.attemptsTo(AddProduct.withProduct(newProduct));
+        myActor.remember("New Product", newProduct);
+    }
+
 
     /**
      * Verifies the product is available in the API <br>
@@ -206,6 +227,17 @@ public class ProductStepDefinitions {
         // The actor's memory allows us to easily delete the product at the end of the test
         if (newProduct != null) {
             myActor.attemptsTo(DeleteProduct.withName(newProduct.getName()));
+        }
+    }
+
+    private void assureProductDoesNotExist(String productName, String brandId) {
+        // verify the product does not exist yet
+        List<String> allProductNames = myActor.asksFor(TheProducts.ofBrand(brandId))
+            .stream()
+            .map(ProductResponse::getName)
+            .collect(Collectors.toList());
+        if (allProductNames.contains(productName)) {
+            myActor.attemptsTo(DeleteProduct.withName(productName));
         }
     }
 }

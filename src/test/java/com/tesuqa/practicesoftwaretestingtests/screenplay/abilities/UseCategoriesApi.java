@@ -1,11 +1,16 @@
 package com.tesuqa.practicesoftwaretestingtests.screenplay.abilities;
 
-import com.practicesoftwaretesting.client.ApiClient;
-import com.practicesoftwaretesting.client.ApiException;
-import com.practicesoftwaretesting.client.api.CategoryApi;
-import com.practicesoftwaretesting.client.model.CategoryRequest;
-import com.practicesoftwaretesting.client.model.CategoryResponse;
-import com.practicesoftwaretesting.client.model.CategoryTreeResponse;
+import com.practicesoftwaretesting.client.v5.ApiClient;
+import com.practicesoftwaretesting.client.v5.api.CategoryApi;
+import com.practicesoftwaretesting.client.v5.model.CategoryRequest;
+import com.practicesoftwaretesting.client.v5.model.CategoryResponse;
+import com.practicesoftwaretesting.client.v5.model.CategoryTreeResponse;
+import com.practicesoftwaretesting.client.v5.model.UpdateResponse;
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.config.ObjectMapperConfig;
+import io.restassured.config.RestAssuredConfig;
+import io.restassured.mapper.ObjectMapperType;
+import io.restassured.response.Response;
 import net.serenitybdd.screenplay.Ability;
 import net.serenitybdd.screenplay.Actor;
 
@@ -15,14 +20,26 @@ import java.util.List;
 public class UseCategoriesApi implements Ability {
 
     private String baseUrl;
-    private ApiClient apiClient = new ApiClient();
-    private CategoryApi categoryApi = new CategoryApi();
+    private ApiClient apiClient;
+    private CategoryApi categoryApi;
 
 
     private UseCategoriesApi(String baseUrl) {
-        this.baseUrl = baseUrl;
-        apiClient.setBasePath(baseUrl);
-        categoryApi.setApiClient(apiClient);
+        // Create a custom configuration with the specified base URL
+        ApiClient.Config config = ApiClient.Config.apiConfig()
+            .reqSpecSupplier(() -> new RequestSpecBuilder()
+                .setBaseUri(baseUrl)
+                .setConfig(RestAssuredConfig.config()
+                    .objectMapperConfig(ObjectMapperConfig.objectMapperConfig()
+                        .defaultObjectMapperType(ObjectMapperType.GSON))
+                )
+            );
+
+        // Create the API client with the custom configuration
+        this.apiClient = ApiClient.api(config);
+
+        // Get the BrandApi from the client
+        this.categoryApi = apiClient.category();
     }
 
     /**
@@ -48,65 +65,40 @@ public class UseCategoriesApi implements Ability {
     }
 
     public List<CategoryTreeResponse> getAllCategoryTrees(String categorySlug) {
-        try {
-            return categoryApi.getCategoriesTree(categorySlug);
-        } catch (ApiException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return categoryApi.getCategoriesTree()
+            .byCategorySlugQuery(categorySlug)
+            .executeAs(Response::thenReturn);
     }
 
 
     public List<CategoryResponse> getAllCategories() {
-        try {
-            return categoryApi.getCategories();
-        } catch (ApiException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return categoryApi.getCategories()
+            .executeAs(Response::thenReturn);
     }
 
-    public void createCategory(CategoryRequest category) {
-        try {
-            categoryApi.storeCategory(category);
-        } catch (ApiException e) {
-            e.printStackTrace();
-        }
+    public CategoryResponse createCategory(CategoryRequest category) {
+        return categoryApi.storeCategory()
+            .body(category)
+            .executeAs(Response::thenReturn);
     }
 
     public CategoryTreeResponse getCategoryTree(String categoryId) {
-        try {
-            return categoryApi.getCategory(categoryId);
-        } catch (ApiException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return categoryApi.getCategory()
+            .categoryIdPath(categoryId)
+            .executeAs(Response::thenReturn);
     }
 
-    public List<CategoryResponse> searchCategory(String query) {
-        try {
-            return categoryApi.searchCategory(query);
-        } catch (ApiException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public void updateCategory(CategoryRequest category, String categoryId ) {
-        try {
-            categoryApi.updateCategory(category, categoryId);
-        } catch (ApiException e) {
-            e.printStackTrace();
-        }
+     public void updateCategory(CategoryRequest category, String categoryId ) {
+        categoryApi.updateCategory()
+            .categoryIdPath(categoryId)
+            .body(category)
+            .executeAs(Response::thenReturn);
     }
 
     public void deleteCategory(String categoryId) {
-        try {
-            categoryApi.deleteCategory(categoryId);
-        } catch (ApiException e) {
-            e.printStackTrace();
-        }
+        categoryApi.deleteCategory()
+            .categoryIdPath(categoryId)
+            .execute(Response::thenReturn);
     }
-
 }
 
