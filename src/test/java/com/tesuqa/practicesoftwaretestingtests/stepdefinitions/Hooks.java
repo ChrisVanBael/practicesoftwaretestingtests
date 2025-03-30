@@ -3,10 +3,7 @@ package com.tesuqa.practicesoftwaretestingtests.stepdefinitions;
 import com.practicesoftwaretesting.client.v5.model.CategoryResponse;
 import com.practicesoftwaretesting.client.v5.model.ProductRequest;
 import com.practicesoftwaretesting.client.v5.model.ProductResponse;
-import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseBrandsApi;
-import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseCategoriesApi;
-import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseImagesApi;
-import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseProductsApi;
+import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.*;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api.DeleteBrand;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api.DeleteCategory;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api.DeleteProduct;
@@ -42,8 +39,10 @@ public class Hooks {
         OnStage.theActorCalled("myActor")
             .whoCan(UseBrandsApi.at(theRestApiBaseUrl))
             .whoCan(UseCategoriesApi.at(theRestApiBaseUrl))
-            .whoCan(UseProductsApi.at(theRestApiBaseUrl))
             .whoCan(UseImagesApi.at(theRestApiBaseUrl))
+            .whoCan(UseInvoicesApi.at(theRestApiBaseUrl))
+            .whoCan(UseProductsApi.at(theRestApiBaseUrl))
+            .whoCan(UseUsersApi.at(theRestApiBaseUrl))
             .whoCan(BrowseTheWeb.with(browser));
 
         myActor = OnStage.theActorInTheSpotlight();

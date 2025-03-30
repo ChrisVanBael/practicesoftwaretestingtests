@@ -1,23 +1,40 @@
 package com.tesuqa.practicesoftwaretestingtests.screenplay.abilities;
 
-import com.practicesoftwaretesting.client.ApiClient;
-import com.practicesoftwaretesting.client.ApiException;
-import com.practicesoftwaretesting.client.api.UserApi;
-import com.practicesoftwaretesting.client.model.UsersLoginBody;
+import com.practicesoftwaretesting.client.v5.ApiClient;
+import com.practicesoftwaretesting.client.v5.api.UserApi;
+import com.practicesoftwaretesting.client.v5.model.AccountRequest;
+import com.practicesoftwaretesting.client.v5.model.TokenResponse;
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.config.ObjectMapperConfig;
+import io.restassured.config.RestAssuredConfig;
+import io.restassured.mapper.ObjectMapperType;
+import io.restassured.response.Response;
 import net.serenitybdd.screenplay.Ability;
 import net.serenitybdd.screenplay.Actor;
 
 public class UseUsersApi implements Ability {
 
     private String baseUrl;
-    private ApiClient apiClient = new ApiClient();
-    private UserApi userApi = new UserApi();
+    private ApiClient apiClient;
+    private UserApi userApi;
 
 
     private UseUsersApi(String baseUrl) {
-        this.baseUrl = baseUrl;
-        apiClient.setBasePath(baseUrl);
-        userApi.setApiClient(apiClient);
+        // Create a custom configuration with the specified base URL
+        ApiClient.Config config = ApiClient.Config.apiConfig()
+            .reqSpecSupplier(() -> new RequestSpecBuilder()
+                .setBaseUri(baseUrl)
+                .setConfig(RestAssuredConfig.config()
+                    .objectMapperConfig(ObjectMapperConfig.objectMapperConfig()
+                        .defaultObjectMapperType(ObjectMapperType.GSON))
+                )
+            );
+
+        // Create the API client with the custom configuration
+        this.apiClient = ApiClient.api(config);
+
+        // Get the UsersApi from the client
+        this.userApi = apiClient.user();
     }
 
     /**
@@ -38,12 +55,10 @@ public class UseUsersApi implements Ability {
         return new UseUsersApi(baseUrl);
     }
 
-    public String login(UsersLoginBody login) {
-        try {
-            return userApi.loginCustomer(login).getAccessToken();
-        } catch (ApiException e) {
-            e.printStackTrace();
-        }
-        return null;
+    public String login(AccountRequest login) {
+        TokenResponse response = userApi.loginCustomer()
+            .body(login)
+            .executeAs(Response::thenReturn);
+        return response.getAccessToken();
     }
 }

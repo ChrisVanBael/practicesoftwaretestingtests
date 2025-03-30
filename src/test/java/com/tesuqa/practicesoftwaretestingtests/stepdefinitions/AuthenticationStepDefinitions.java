@@ -13,20 +13,19 @@ public class AuthenticationStepDefinitions {
 
     private EnvironmentVariables environmentVariables;
 
-    private Actor apiActor;
+    private Actor myActor;
 
-    @Before
-    public void setTheStage() {
-        apiActor = OnStage.theActorCalled("apiActor");
-        String theRestApiBaseUrl = EnvironmentSpecificConfiguration
-                .from(environmentVariables).getProperty("api.base.url");
-        apiActor = OnStage.theActorCalled("ApiActor").whoCan(UseUsersApi.at(theRestApiBaseUrl));
+    @Before(order = 10)
+    public void prepareBrandActor() {
+        // Access the existing actor via OnStage
+        // No need to set API abilities again as they're already added in Hooks
+        myActor = OnStage.theActorInTheSpotlight();
     }
 
     @Given("the user is logged in with email {string} and password {string}")
     public void theUserIsLoggedInWithUsernameAndPassword(String email, String password) {
-        apiActor.attemptsTo(Login.withEmailAndPassword(email, password));
-        String token = apiActor.recall("token");
+        myActor.attemptsTo(Login.withEmailAndPassword(email, password));
+        String token = myActor.recall("token");
         System.out.println(token);
     }
 }

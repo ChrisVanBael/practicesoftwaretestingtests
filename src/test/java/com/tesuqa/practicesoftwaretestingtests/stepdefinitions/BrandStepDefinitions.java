@@ -1,7 +1,5 @@
 package com.tesuqa.practicesoftwaretestingtests.stepdefinitions;
 
-import com.practicesoftwaretesting.client.v5.model.BrandResponse;
-import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheBrands;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheId;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api.AddBrand;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api.DeleteBrand;
@@ -9,13 +7,10 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import net.serenitybdd.model.environment.EnvironmentSpecificConfiguration;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.actors.OnStage;
-import net.serenitybdd.screenplay.actors.OnlineCast;
 import net.serenitybdd.screenplay.ensure.Ensure;
 import net.thucydides.model .util.EnvironmentVariables;
-import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseBrandsApi;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheBrandNames;
 
 import java.util.List;

@@ -2,42 +2,22 @@ package com.tesuqa.practicesoftwaretestingtests.stepdefinitions;
 
 
 import com.practicesoftwaretesting.client.v5.model.ImageResponse;
-import com.practicesoftwaretesting.client.v5.model.ProductRequest;
-import com.practicesoftwaretesting.client.v5.model.ProductResponse;
-import com.tesuqa.practicesoftwaretestingtests.pages.HomePage;
-import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseBrandsApi;
-import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseCategoriesApi;
-import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseImagesApi;
-import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseProductsApi;
-import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheId;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheImages;
-import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheProducts;
-import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.web.TheProductNames;
-import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api.AddProduct;
-import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api.DeleteProduct;
-import io.cucumber.datatable.DataTable;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import net.serenitybdd.model.environment.EnvironmentSpecificConfiguration;
 import net.serenitybdd.screenplay.Actor;
-import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
-import net.serenitybdd.screenplay.actions.Open;
 import net.serenitybdd.screenplay.actors.OnStage;
-import net.serenitybdd.screenplay.actors.OnlineCast;
 import net.serenitybdd.screenplay.ensure.Ensure;
 import net.thucydides.model.util.EnvironmentVariables;
 import org.openqa.selenium.WebDriver;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ImageStepDefinitions {
 
     private EnvironmentVariables environmentVariables;
-    private Actor apiActor;
+    private Actor myActor;
     private WebDriver browser;
 
     @Before(order = 10)
@@ -55,8 +35,8 @@ public class ImageStepDefinitions {
      */
     @Given("all images are read through the API")
     public void followingProductIsNotEnteredYet() {
-        List<ImageResponse> allImages = apiActor.asksFor(TheImages.knownByTheSystem());
-        apiActor.remember("Images", allImages);
+        List<ImageResponse> allImages = myActor.asksFor(TheImages.knownByTheSystem());
+        myActor.remember("Images", allImages);
     }
 
     /**
@@ -66,7 +46,7 @@ public class ImageStepDefinitions {
      */
     @When("the list of images is not empty")
     public void verifyImageListNotEmpty() {
-        List<ImageResponse> allImages = apiActor.recall("Images");
-        apiActor.attemptsTo(Ensure.that(allImages).isNotNull());
+        List<ImageResponse> allImages = myActor.recall("Images");
+        myActor.attemptsTo(Ensure.that(allImages).isNotNull());
     }
 }

@@ -1,6 +1,6 @@
 package com.tesuqa.practicesoftwaretestingtests.stepdefinitions;
 
-import com.practicesoftwaretesting.client.model.InvoiceResponse;
+import com.practicesoftwaretesting.client.v5.model.InvoiceResponse;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseInvoicesApi;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.questions.api.TheInvoices;
 import io.cucumber.java.Before;
@@ -17,26 +17,25 @@ import java.util.List;
 public class InvoicesStepDefinitions {
 
     private EnvironmentVariables environmentVariables;
-    private Actor apiActor;
+    private Actor myActor;
 
-    @Before
-    public void setTheStage() {
-        apiActor = OnStage.theActorCalled("apiActor");
-        String theRestApiBaseUrl = EnvironmentSpecificConfiguration
-                .from(environmentVariables).getProperty("api.base.url");
-        this.apiActor = OnStage.theActorCalled("ApiActor").whoCan(UseInvoicesApi.at(theRestApiBaseUrl));
+    @Before(order = 10)
+    public void prepareBrandActor() {
+        // Access the existing actor via OnStage
+        // No need to set API abilities again as they're already added in Hooks
+        myActor = OnStage.theActorInTheSpotlight();
     }
 
     @When("the user retrieves the invoices")
     public void theUserRetrievesTheInvoices() {
-        String token = apiActor.recall("token");
+        String token = myActor.recall("token");
         System.out.println(token);
-        List<InvoiceResponse> allInvoices = apiActor.asksFor(TheInvoices.knownByTheSystem());
-        apiActor.remember("invoices", allInvoices);
+        List<InvoiceResponse> allInvoices = myActor.asksFor(TheInvoices.knownByTheSystem());
+        myActor.remember("invoices", allInvoices);
     }
 
     @Then("{int} invoices should be successfully retrieved")
     public void invoicesShouldBeSuccessfullyRetrieved(int numberOfInvoices) {
-        apiActor.attemptsTo(Ensure.that(numberOfInvoices).isEqualTo(((List<InvoiceResponse>) apiActor.recall("invoices")).size()));
+        myActor.attemptsTo(Ensure.that(numberOfInvoices).isEqualTo(((List<InvoiceResponse>) myActor.recall("invoices")).size()));
     }
 }
