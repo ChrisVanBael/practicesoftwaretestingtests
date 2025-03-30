@@ -37,9 +37,8 @@ import java.util.stream.Collectors;
 public class ImageStepDefinitions {
 
     private EnvironmentVariables environmentVariables;
-    private Actor myActor;
+    private Actor apiActor;
     private WebDriver browser;
-
 
     @Before(order = 10)
     public void prepareBrandActor() {
@@ -56,8 +55,8 @@ public class ImageStepDefinitions {
      */
     @Given("all images are read through the API")
     public void followingProductIsNotEnteredYet() {
-        List<ImageResponse> allImages = myActor.asksFor(TheImages.knownByTheSystem());
-        myActor.remember("Images", allImages);
+        List<ImageResponse> allImages = apiActor.asksFor(TheImages.knownByTheSystem());
+        apiActor.remember("Images", allImages);
     }
 
     /**
@@ -67,7 +66,7 @@ public class ImageStepDefinitions {
      */
     @When("the list of images is not empty")
     public void verifyImageListNotEmpty() {
-        List<ImageResponse> allImages = myActor.recall("Images");
-        myActor.attemptsTo(Ensure.that(allImages).isNotNull());
+        List<ImageResponse> allImages = apiActor.recall("Images");
+        apiActor.attemptsTo(Ensure.that(allImages).isNotNull());
     }
 }

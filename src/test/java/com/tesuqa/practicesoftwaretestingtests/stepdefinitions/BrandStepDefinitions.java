@@ -25,7 +25,6 @@ public class BrandStepDefinitions {
     private EnvironmentVariables environmentVariables;
     private Actor myActor;
 
-
     @Before(order = 10)
     public void prepareBrandActor() {
         // Access the existing actor via OnStage
