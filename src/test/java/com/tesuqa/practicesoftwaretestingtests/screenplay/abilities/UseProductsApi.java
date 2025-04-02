@@ -1,15 +1,9 @@
 package com.tesuqa.practicesoftwaretestingtests.screenplay.abilities;
 
-import com.practicesoftwaretesting.client.v5.ApiClient;
 import com.practicesoftwaretesting.client.v5.api.ProductApi;
 import com.practicesoftwaretesting.client.v5.model.PaginatedProductResponse;
 import com.practicesoftwaretesting.client.v5.model.ProductRequest;
 import com.practicesoftwaretesting.client.v5.model.ProductResponse;
-import com.practicesoftwaretesting.client.v5.model.StoreProductResponse;
-import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.config.ObjectMapperConfig;
-import io.restassured.config.RestAssuredConfig;
-import io.restassured.mapper.ObjectMapperType;
 import io.restassured.response.Response;
 import net.serenitybdd.screenplay.Ability;
 import net.serenitybdd.screenplay.Actor;
@@ -78,7 +72,7 @@ public class UseProductsApi implements Ability {
     }
 
     public void createProduct(ProductRequest product) {
-        StoreProductResponse response = productApi.storeProduct()
+        ProductResponse response = productApi.storeProduct()
             .body(product)
             .executeAs(Response::thenReturn);
         int a = 0;

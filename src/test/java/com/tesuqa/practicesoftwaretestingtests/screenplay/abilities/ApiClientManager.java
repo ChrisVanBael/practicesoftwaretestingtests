@@ -1,22 +1,22 @@
 package com.tesuqa.practicesoftwaretestingtests.screenplay.abilities;
 
 import com.practicesoftwaretesting.client.v5.ApiClient;
+import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.RefreshableApi;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.mapper.ObjectMapperType;
 import net.serenitybdd.screenplay.Ability;
 import net.serenitybdd.screenplay.Actor;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * Singleton class to manage a shared ApiClient instance across all API abilities
- * Implemented as a Serenity BDD Ability for direct access by actors
- */
 public class ApiClientManager implements Ability {
     private static ApiClientManager instance;
     private ApiClient apiClient;
     private String baseUrl;
     private String accessToken;
+    private final List<RefreshableApi> dependentApis = new ArrayList<>();
 
     private ApiClientManager(String baseUrl) {
         this.baseUrl = baseUrl;
@@ -45,7 +45,12 @@ public class ApiClientManager implements Ability {
     public ApiClientManager setAccessToken(String accessToken) {
         this.accessToken = accessToken;
         updateApiClient();
+        notifyDependentApis();
         return this;
+    }
+
+    public void registerDependentApi(RefreshableApi api) {
+        dependentApis.add(api);
     }
 
     private void updateApiClient() {
@@ -67,8 +72,9 @@ public class ApiClientManager implements Ability {
         this.apiClient = ApiClient.api(config);
     }
 
-    // For testing and reset purposes
-    public void reset() {
-        instance = null;
+    private void notifyDependentApis() {
+        for (RefreshableApi api : dependentApis) {
+            api.refreshApiClient(apiClient);
+        }
     }
 }

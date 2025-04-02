@@ -1,6 +1,7 @@
 package com.tesuqa.practicesoftwaretestingtests.stepdefinitions;
 
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.ApiClientManager;
+import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseInvoicesApi;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.abilities.UseUsersApi;
 import com.tesuqa.practicesoftwaretestingtests.screenplay.tasks.api.Login;
 import io.cucumber.java.Before;

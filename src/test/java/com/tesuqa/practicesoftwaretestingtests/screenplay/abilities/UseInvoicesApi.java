@@ -4,10 +4,7 @@ import com.practicesoftwaretesting.client.v5.ApiClient;
 import com.practicesoftwaretesting.client.v5.api.InvoiceApi;
 import com.practicesoftwaretesting.client.v5.model.InvoiceResponse;
 import com.practicesoftwaretesting.client.v5.model.PaginatedInvoiceResponse;
-import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.config.ObjectMapperConfig;
-import io.restassured.config.RestAssuredConfig;
-import io.restassured.mapper.ObjectMapperType;
+
 import io.restassured.response.Response;
 import net.serenitybdd.screenplay.Ability;
 import net.serenitybdd.screenplay.Actor;
@@ -15,14 +12,15 @@ import net.serenitybdd.screenplay.Actor;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UseInvoicesApi implements Ability {
+public class UseInvoicesApi implements Ability, RefreshableApi {
     private String baseUrl;
     private InvoiceApi invoiceApi;
 
 
     private UseInvoicesApi(String baseUrl) {
         this.baseUrl = baseUrl;
-
+        // Register with ApiClientManager to receive updates
+        ApiClientManager.getInstance(baseUrl).registerDependentApi(this);
         // Initialize the ApiClientManager with the base URL if not already initialized
         this.invoiceApi = ApiClientManager.getInstance(baseUrl).getApiClient().invoice();
     }
@@ -52,9 +50,9 @@ public class UseInvoicesApi implements Ability {
     /**
      * Refresh the API client - call this if the token has been updated
      */
-    public UseInvoicesApi refreshApiClient() {
-        this.invoiceApi = ApiClientManager.getInstance(baseUrl).getApiClient().invoice();
-        return this;
+    @Override
+    public void refreshApiClient(ApiClient apiClient) {
+        this.invoiceApi = apiClient.invoice();
     }
 
     public List<InvoiceResponse> getAllInvoices() {

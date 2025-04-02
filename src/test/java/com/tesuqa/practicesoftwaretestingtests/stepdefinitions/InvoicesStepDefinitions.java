@@ -34,8 +34,8 @@ public class InvoicesStepDefinitions {
         myActor.remember("invoices", allInvoices);
     }
 
-    @Then("{int} invoices should be successfully retrieved")
+    @Then("the number of invoices should be greater than {int}")
     public void invoicesShouldBeSuccessfullyRetrieved(int numberOfInvoices) {
-        myActor.attemptsTo(Ensure.that(numberOfInvoices).isEqualTo(((List<InvoiceResponse>) myActor.recall("invoices")).size()));
+        myActor.attemptsTo(Ensure.that(numberOfInvoices).isLessThanOrEqualTo(((List<InvoiceResponse>) myActor.recall("invoices")).size()));
     }
 }

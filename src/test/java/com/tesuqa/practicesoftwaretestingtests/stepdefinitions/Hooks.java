@@ -37,6 +37,7 @@ public class Hooks {
 
         // This will create the actor if it doesn't exist or return existing one
         OnStage.theActorCalled("myActor")
+            .whoCan(ApiClientManager.withBaseUrl(theRestApiBaseUrl))
             .whoCan(UseBrandsApi.at(theRestApiBaseUrl))
             .whoCan(UseCategoriesApi.at(theRestApiBaseUrl))
             .whoCan(UseImagesApi.at(theRestApiBaseUrl))
