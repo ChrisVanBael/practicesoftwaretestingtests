@@ -1,122 +1,235 @@
 package com.tesuqa.practicesoftwaretestingtests.screenplay.abilities;
 
+import com.practicesoftwaretesting.client.v5.ApiClient;
 import com.practicesoftwaretesting.client.v5.api.ProductApi;
 import com.practicesoftwaretesting.client.v5.model.PaginatedProductResponse;
 import com.practicesoftwaretesting.client.v5.model.ProductRequest;
 import com.practicesoftwaretesting.client.v5.model.ProductResponse;
-import io.restassured.response.Response;
-import net.serenitybdd.screenplay.Ability;
+import com.practicesoftwaretesting.client.v5.model.UpdateResponse;
 import net.serenitybdd.screenplay.Actor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+/**
+ * Ability to interact with the Products API
+ */
+public class UseProductsApi extends BaseApiAbility {
 
-public class UseProductsApi implements Ability {
-
-    private String baseUrl;
     private ProductApi productApi;
 
-
     private UseProductsApi(String baseUrl) {
-        this.baseUrl = baseUrl;
-
-        // Initialize the ApiClientManager with the base URL if not already initialized
+        super(baseUrl);
         this.productApi = ApiClientManager.getInstance(baseUrl).getApiClient().product();
     }
 
-    /**
-     * Ability to Use the Products API at a specified URL
-     * @param baseUrl URL to use
-     * @return UseProductsAPI
-     */
     public static UseProductsApi at(String baseUrl) {
         return new UseProductsApi(baseUrl);
     }
 
-    /**
-     * Used to access the Actor's ability to UseProductsApi from within the Interaction classes, such as GET or PUT
-     * @param actor actor to use
-     * @return UseProductsApi
-     */
     public static UseProductsApi as(Actor actor) {
         return actor.abilityTo(UseProductsApi.class);
     }
 
+    @Override
     public String toString() {
-        return "call the Products API at "+ baseUrl;
+        return "call the Products API at " + baseUrl;
+    }
+
+    @Override
+    public void refreshApiClient(ApiClient apiClient) {
+        this.productApi = apiClient.product();
     }
 
     /**
-     * Refresh the API client - call this if the token has been updated
+     * Retrieves all products, optionally filtered by brand, category, and rental status
+     *
+     * @param brandId ID of the brand to filter by (optional)
+     * @param categoryId ID of the category to filter by (optional)
+     * @param isRental Filter for rental products (optional)
+     * @return A list of product responses
      */
-    public UseProductsApi refreshApiClient() {
-        this.productApi = ApiClientManager.getInstance(baseUrl).getApiClient().product();
-        return this;
+    public List<ProductResponse> getAllProducts(String brandId, String categoryId, String isRental) {
+        List<ProductResponse> allProducts = new ArrayList<>();
+        Integer currentPage = 1;
+        Integer lastPage = 1;
+
+        do {
+            Integer finalCurrentPage = currentPage;
+            PaginatedProductResponse paginatedResponse = executeApiCall(
+                "retrieve products page " + currentPage,
+                () -> productApi.getProducts()
+                    .byBrandQuery(brandId)
+                    .byCategoryQuery(categoryId)
+                    .isRentalQuery(isRental)
+                    .pageQuery(finalCurrentPage)
+                    .execute(r -> r),
+                PaginatedProductResponse.class
+            );
+
+            allProducts.addAll(paginatedResponse.getData());
+            lastPage = paginatedResponse.getLastPage();
+            currentPage++;
+        } while (currentPage <= lastPage);
+
+        return allProducts;
     }
 
-    public List<ProductResponse> getAllProducts(String brandId, String categoryId, String isRental) {
-        Integer lastPage = 0;
-        List<ProductResponse> products = new ArrayList<>();
-        for (Integer page = lastPage; page <= lastPage; page++) {
-            PaginatedProductResponse productResp = productApi.getProducts()
+    /**
+     * Creates a new product
+     *
+     * @param product The product request data
+     * @return The created product response
+     */
+    public ProductResponse createProduct(ProductRequest product) {
+        Objects.requireNonNull(product, "Product request cannot be null");
+
+        ProductResponse created = executeApiCall(
+            "create product",
+            () -> productApi.storeProduct().body(product).execute(r -> r),
+            ProductResponse.class
+        );
+        return created;
+    }
+
+    /**
+     * Updates an existing product
+     *
+     * @param product The updated product data
+     * @param productId The ID of the product to update
+     * @return The update response
+     */
+    public UpdateResponse updateProduct(ProductRequest product, String productId) {
+        Objects.requireNonNull(product, "Product request cannot be null");
+        Objects.requireNonNull(productId, "Product ID cannot be null");
+
+        UpdateResponse response = executeApiCall(
+            "update product with ID " + productId,
+            () -> productApi.updateProduct().body(product).productIdPath(productId).execute(r -> r),
+            UpdateResponse.class
+        );
+        return response;
+    }
+
+    /**
+     * Retrieves a specific product by ID
+     *
+     * @param productId The ID of the product to retrieve
+     * @return The product response
+     */
+    public ProductResponse getProduct(String productId) {
+        Objects.requireNonNull(productId, "Product ID cannot be null");
+
+        ProductResponse product = executeApiCall(
+            "get product with ID " + productId,
+            () -> productApi.getProduct().productIdPath(productId).execute(r -> r),
+            ProductResponse.class
+        );
+        return product;
+    }
+
+    /**
+     * Deletes a specific product by ID
+     *
+     * @param productId The ID of the product to delete
+     */
+    public void deleteProduct(String productId) {
+        Objects.requireNonNull(productId, "Product ID cannot be null");
+
+        executeApiCall(
+            "delete product with ID " + productId,
+            () -> productApi.deleteProduct().productIdPath(productId).execute(r -> r),
+            Object.class
+        );
+    }
+
+    /**
+     * Retrieves products related to a specific product
+     *
+     * @param productId The ID of the product to find related products for
+     * @return A list of related product responses
+     */
+    public List<ProductResponse> getRelatedProducts(String productId) {
+        Objects.requireNonNull(productId, "Product ID cannot be null");
+
+        List<ProductResponse> relatedProducts = executeApiCallForList(
+            "get related products for product with ID " + productId,
+            () -> productApi.getRelatedProducts().productIdPath(productId).execute(r -> r),
+            ProductResponse.class
+        );
+        return relatedProducts;
+    }
+
+    /**
+     * Searches for products matching a query
+     *
+     * @param query The search query
+     * @return A list of matching product responses
+     */
+    public List<ProductResponse> search(String query) {
+        Objects.requireNonNull(query, "Search query cannot be null");
+
+        List<ProductResponse> allProducts = new ArrayList<>();
+        Integer currentPage = 1;
+        Integer lastPage = 1;
+
+        do {
+            Integer finalCurrentPage = currentPage;
+            PaginatedProductResponse paginatedResponse = executeApiCall(
+                "search products with query '" + query + "' page " + currentPage,
+                () -> productApi.searchProduct().qQuery(query).pageQuery(finalCurrentPage).execute(r -> r),
+                PaginatedProductResponse.class
+            );
+
+            allProducts.addAll(paginatedResponse.getData());
+            lastPage = paginatedResponse.getLastPage();
+            currentPage++;
+        } while (currentPage <= lastPage);
+
+        return allProducts;
+    }
+
+    /**
+     * Partially updates an existing product
+     *
+     * @param product The partial product data
+     * @param productId The ID of the product to update
+     * @return The update response
+     */
+    public UpdateResponse patchProduct(ProductRequest product, String productId) {
+        Objects.requireNonNull(product, "Product request cannot be null");
+        Objects.requireNonNull(productId, "Product ID cannot be null");
+
+        UpdateResponse response = executeApiCall(
+            "partially update product with ID " + productId,
+            () -> productApi.patchProduct().body(product).productIdPath(productId).execute(r -> r),
+            UpdateResponse.class
+        );
+        return response;
+    }
+
+    /**
+     * Retrieves a specific page of products
+     *
+     * @param page The page number to retrieve
+     * @param brandId ID of the brand to filter by (optional)
+     * @param categoryId ID of the category to filter by (optional)
+     * @param isRental Filter for rental products (optional)
+     * @return A paginated product response
+     */
+    public PaginatedProductResponse getProductsPage(Integer page, String brandId, String categoryId, String isRental) {
+        Objects.requireNonNull(page, "Page number cannot be null");
+
+        return executeApiCall(
+            "retrieve products page " + page,
+            () -> productApi.getProducts()
                 .byBrandQuery(brandId)
                 .byCategoryQuery(categoryId)
                 .isRentalQuery(isRental)
                 .pageQuery(page)
-                .executeAs(Response::thenReturn);
-            lastPage = productResp.getLastPage();
-            products.addAll(productResp.getData());
-        }
-        return products;
+                .execute(r -> r),
+            PaginatedProductResponse.class
+        );
     }
-
-    public void createProduct(ProductRequest product) {
-        ProductResponse response = productApi.storeProduct()
-            .body(product)
-            .executeAs(Response::thenReturn);
-        int a = 0;
-    }
-
-    public void updateProduct(ProductRequest product, String productId ) {
-        productApi.updateProduct()
-            .productIdPath(productId)
-            .body(product)
-            .executeAs(Response::thenReturn);
-    }
-
-    public ProductResponse getProduct(String productId) {
-        return productApi.getProduct()
-            .productIdPath(productId)
-            .executeAs(Response::thenReturn);
-    }
-
-    public void deleteProduct(String productId) {
-        productApi.deleteProduct()
-            .productIdPath(productId)
-            .execute(Response::thenReturn);
-    }
-
-    public List<ProductResponse> getRelatedProducts(String productId) {
-        return productApi.getRelatedProducts()
-            .productIdPath(productId)
-            .executeAs(Response::thenReturn);
-    }
-
-    public List<ProductResponse> search(String query) {
-        List<ProductResponse> products = new ArrayList<>();
-        Integer lastPage = 0;
-
-        for (Integer page=0; page<=lastPage; page++) {
-            PaginatedProductResponse productResp = productApi.searchProduct()
-                .pageQuery(query)
-                .pageQuery(page)
-                .executeAs(Response::thenReturn);
-            lastPage = productResp.getLastPage();
-            products.addAll(productResp.getData());
-        }
-        return products;
-    }
-
 }
-

@@ -231,6 +231,7 @@ public class ProductStepDefinitions {
         if (newProduct != null) {
             myActor.attemptsTo(DeleteProduct.withName(newProduct.getName()));
         }
+        myActor.forget("New Product");
     }
 
     private void assureProductDoesNotExist(String productName, String brandId) {

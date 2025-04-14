@@ -1,5 +1,6 @@
 Feature: CRUD operations on Brands via API
 
+
   Scenario Outline: Successfully add Brands
     Given the "<brand>" brand is not entered yet
     When I add brand with name "<brand>" and slug "<slug>"
@@ -7,5 +8,5 @@ Feature: CRUD operations on Brands via API
 
     Examples:
       | brand   | slug    |
-      | brand 1 | brand-1 |
+      | brand 2 | brand-2 |
 

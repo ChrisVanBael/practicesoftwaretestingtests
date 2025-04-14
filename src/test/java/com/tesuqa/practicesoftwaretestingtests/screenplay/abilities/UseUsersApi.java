@@ -4,23 +4,21 @@ import com.practicesoftwaretesting.client.v5.ApiClient;
 import com.practicesoftwaretesting.client.v5.api.UserApi;
 import com.practicesoftwaretesting.client.v5.model.AccountRequest;
 import com.practicesoftwaretesting.client.v5.model.TokenResponse;
-import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.config.ObjectMapperConfig;
-import io.restassured.config.RestAssuredConfig;
-import io.restassured.mapper.ObjectMapperType;
+import com.tesuqa.practicesoftwaretestingtests.utilities.TestLogger;
 import io.restassured.response.Response;
 import net.serenitybdd.screenplay.Ability;
 import net.serenitybdd.screenplay.Actor;
 
-public class UseUsersApi implements Ability {
+public class UseUsersApi implements Ability, RefreshableApi {
 
     private String baseUrl;
     private UserApi userApi;
-
+    private static final TestLogger logger = TestLogger.auto();
 
     private UseUsersApi(String baseUrl) {
         this.baseUrl = baseUrl;
-
+        // Register with ApiClientManager to receive updates
+        ApiClientManager.getInstance(baseUrl).registerDependentApi(this);
         // Initialize the ApiClientManager with the base URL if not already initialized
         this.userApi = ApiClientManager.getInstance(baseUrl).getApiClient().user();
     }
@@ -50,14 +48,17 @@ public class UseUsersApi implements Ability {
     /**
      * Refresh the API client - call this if the token has been updated
      */
-    public UseUsersApi refreshApiClient() {
-        this.userApi = ApiClientManager.getInstance(baseUrl).getApiClient().user();
-        return this;
+    @Override
+    public void refreshApiClient(ApiClient apiClient) {
+        this.userApi = apiClient.user();
     }
+
     public String login(AccountRequest login) {
+        logger.info("UseUsersApi", "Logging in for %s ...", login.getEmail());
         TokenResponse response = userApi.loginCustomer()
             .body(login)
             .executeAs(Response::thenReturn);
+        logger.info("UseUsersApi", "Logged in, token expires in %s ms", response.getExpiresIn());
         return response.getAccessToken();
     }
 }

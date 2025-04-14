@@ -6,95 +6,113 @@ import com.practicesoftwaretesting.client.v5.model.CategoryRequest;
 import com.practicesoftwaretesting.client.v5.model.CategoryResponse;
 import com.practicesoftwaretesting.client.v5.model.CategoryTreeResponse;
 import com.practicesoftwaretesting.client.v5.model.UpdateResponse;
-import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.config.ObjectMapperConfig;
-import io.restassured.config.RestAssuredConfig;
-import io.restassured.mapper.ObjectMapperType;
-import io.restassured.response.Response;
-import net.serenitybdd.screenplay.Ability;
 import net.serenitybdd.screenplay.Actor;
 
 import java.util.List;
+import java.util.Objects;
 
+/**
+ * Ability to interact with the Categories API
+ */
+public class UseCategoriesApi extends BaseApiAbility {
 
-public class UseCategoriesApi implements Ability {
-
-    private String baseUrl;
     private CategoryApi categoryApi;
 
-
     private UseCategoriesApi(String baseUrl) {
-        this.baseUrl = baseUrl;
-
-        // Get the BrandApi from the shared ApiClient
+        super(baseUrl);
         this.categoryApi = ApiClientManager.getInstance(baseUrl).getApiClient().category();
     }
 
-    /**
-     * Ability to Use the Categories API at a specified URL
-     * @param baseUrl URL to use
-     * @return UseCategoriesAPI
-     */
     public static UseCategoriesApi at(String baseUrl) {
         return new UseCategoriesApi(baseUrl);
     }
 
-    /**
-     * Used to access the Actor's ability to UseCategoriesApi from within the Interaction classes, such as GET or PUT
-     * @param actor actor to use
-     * @return UseCategoriesAPI
-     */
     public static UseCategoriesApi as(Actor actor) {
         return actor.abilityTo(UseCategoriesApi.class);
     }
 
+    @Override
     public String toString() {
-        return "call the Categories API at "+ baseUrl;
+        return "call the Categories API at " + baseUrl;
     }
 
-    /**
-     * Refresh the API client - call this if the token has been updated
-     */
-    public UseCategoriesApi refreshApiClient() {
-        this.categoryApi = ApiClientManager.getInstance(baseUrl).getApiClient().category();
-        return this;
+    @Override
+    public void refreshApiClient(ApiClient apiClient) {
+        this.categoryApi = apiClient.category();
     }
 
     public List<CategoryTreeResponse> getAllCategoryTrees(String categorySlug) {
-        return categoryApi.getCategoriesTree()
-            .byCategorySlugQuery(categorySlug)
-            .executeAs(Response::thenReturn);
+        Objects.requireNonNull(categorySlug, "Category slug cannot be null");
+
+        List<CategoryTreeResponse> categoryTrees = executeApiCallForList(
+            "retrieve all category trees",
+            () -> categoryApi.getCategoriesTree().byCategorySlugQuery(categorySlug).execute(r -> r),
+            CategoryTreeResponse.class
+        );
+        return categoryTrees;
     }
 
-
     public List<CategoryResponse> getAllCategories() {
-        return categoryApi.getCategories()
-            .executeAs(Response::thenReturn);
+        List<CategoryResponse> categories = executeApiCallForList(
+            "retrieve all categories",
+            () -> categoryApi.getCategories().execute(r -> r),
+            CategoryResponse.class
+        );
+        return categories;
     }
 
     public CategoryResponse createCategory(CategoryRequest category) {
-        return categoryApi.storeCategory()
-            .body(category)
-            .executeAs(Response::thenReturn);
+        Objects.requireNonNull(category, "Category request cannot be null");
+
+        CategoryResponse created = executeApiCall(
+            "create category",
+            () -> categoryApi.storeCategory().body(category).execute(r -> r),
+            CategoryResponse.class
+        );
+        return created;
     }
 
     public CategoryTreeResponse getCategoryTree(String categoryId) {
-        return categoryApi.getCategory()
-            .categoryIdPath(categoryId)
-            .executeAs(Response::thenReturn);
+        Objects.requireNonNull(categoryId, "Category ID cannot be null");
+
+        CategoryTreeResponse categoryTree = executeApiCall(
+            "get category tree with ID " + categoryId,
+            () -> categoryApi.getCategory().categoryIdPath(categoryId).execute(r -> r),
+            CategoryTreeResponse.class
+        );
+        return categoryTree;
     }
 
-     public void updateCategory(CategoryRequest category, String categoryId ) {
-        categoryApi.updateCategory()
-            .categoryIdPath(categoryId)
-            .body(category)
-            .executeAs(Response::thenReturn);
+    public UpdateResponse updateCategory(CategoryRequest category, String categoryId) {
+        Objects.requireNonNull(category, "Category request cannot be null");
+        Objects.requireNonNull(categoryId, "Category ID cannot be null");
+
+        UpdateResponse response = executeApiCall(
+            "update category with ID " + categoryId,
+            () -> categoryApi.updateCategory().categoryIdPath(categoryId).body(category).execute(r -> r),
+            UpdateResponse.class
+        );
+        return response;
     }
 
     public void deleteCategory(String categoryId) {
-        categoryApi.deleteCategory()
-            .categoryIdPath(categoryId)
-            .execute(Response::thenReturn);
+        Objects.requireNonNull(categoryId, "Category ID cannot be null");
+
+        executeApiCall(
+            "delete category with ID " + categoryId,
+            () -> categoryApi.deleteCategory().categoryIdPath(categoryId).execute(r -> r),
+            Object.class
+        );
+    }
+
+    public List<CategoryResponse> searchCategory(String query) {
+        Objects.requireNonNull(query, "Search query cannot be null");
+
+        List<CategoryResponse> categories = executeApiCallForList(
+            "search categories with query '" + query + "'",
+            () -> categoryApi.searchCategory().qQuery(query).execute(r -> r),
+            CategoryResponse.class
+        );
+        return categories;
     }
 }
-

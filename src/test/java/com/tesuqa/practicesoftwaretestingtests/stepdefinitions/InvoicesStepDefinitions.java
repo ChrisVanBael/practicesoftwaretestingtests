@@ -28,14 +28,13 @@ public class InvoicesStepDefinitions {
 
     @When("the user retrieves the invoices")
     public void theUserRetrievesTheInvoices() {
-        String token = myActor.recall("token");
-        System.out.println(token);
         List<InvoiceResponse> allInvoices = myActor.asksFor(TheInvoices.knownByTheSystem());
         myActor.remember("invoices", allInvoices);
     }
 
     @Then("the number of invoices should be greater than {int}")
     public void invoicesShouldBeSuccessfullyRetrieved(int numberOfInvoices) {
-        myActor.attemptsTo(Ensure.that(numberOfInvoices).isLessThanOrEqualTo(((List<InvoiceResponse>) myActor.recall("invoices")).size()));
+        List<InvoiceResponse> foundInvoices = myActor.recall("invoices");
+        myActor.attemptsTo(Ensure.that(foundInvoices.size()).isGreaterThanOrEqualTo(numberOfInvoices));
     }
 }

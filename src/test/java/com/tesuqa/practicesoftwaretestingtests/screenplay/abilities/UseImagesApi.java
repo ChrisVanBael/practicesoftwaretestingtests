@@ -3,10 +3,7 @@ package com.tesuqa.practicesoftwaretestingtests.screenplay.abilities;
 import com.practicesoftwaretesting.client.v5.ApiClient;
 import com.practicesoftwaretesting.client.v5.api.ImageApi;
 import com.practicesoftwaretesting.client.v5.model.ImageResponse;
-import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.config.ObjectMapperConfig;
-import io.restassured.config.RestAssuredConfig;
-import io.restassured.mapper.ObjectMapperType;
+import com.tesuqa.practicesoftwaretestingtests.utilities.TestLogger;
 import io.restassured.response.Response;
 import net.serenitybdd.screenplay.Ability;
 import net.serenitybdd.screenplay.Actor;
@@ -14,15 +11,17 @@ import net.serenitybdd.screenplay.Actor;
 import java.util.List;
 
 
-public class UseImagesApi implements Ability {
+public class UseImagesApi implements Ability, RefreshableApi {
 
     private String baseUrl;
     private ImageApi imagesApi;
+    private static final TestLogger logger = TestLogger.auto();
 
 
     private UseImagesApi(String baseUrl) {
         this.baseUrl = baseUrl;
-
+        // Register with ApiClientManager to receive updates
+        ApiClientManager.getInstance(baseUrl).registerDependentApi(this);
         // Get the BrandApi from the shared ApiClient
         this.imagesApi = ApiClientManager.getInstance(baseUrl).getApiClient().image();
     }
@@ -52,13 +51,18 @@ public class UseImagesApi implements Ability {
     /**
      * Refresh the API client - call this if the token has been updated
      */
-    public UseImagesApi refreshApiClient() {
-        this.imagesApi = ApiClientManager.getInstance(baseUrl).getApiClient().image();
-        return this;
+    @Override
+    public void refreshApiClient(ApiClient apiClient) {
+        this.imagesApi = apiClient.image();
     }
+
     public List<ImageResponse> getAllImages() {
-        return imagesApi.getImages()
+        logger.info("UseImagesApi", "Retrieving images...");
+        List<ImageResponse> images = imagesApi.getImages()
             .executeAs(Response::thenReturn);
+        logger.info("UseImagesApi", "Found %d images", images.size());
+        logger.debug("UseImagesApi", "Found images: %s", images.size());
+        return images;
     }
 }
 

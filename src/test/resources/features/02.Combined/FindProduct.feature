@@ -1,5 +1,6 @@
 Feature: Add and find a product
 
+  @to_run
   Scenario: Verify a created product is displayed on the homepage
     Given following product is not entered yet
       | Product   | Description             | Price     | Category   | Brand           | Location | Rental |

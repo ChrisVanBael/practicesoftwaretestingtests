@@ -29,6 +29,5 @@ public class AuthenticationStepDefinitions {
         myActor.attemptsTo(Login.withEmailAndPassword(email, password));
         String token = myActor.recall("token");
         ApiClientManager.as(myActor).setAccessToken(token);
-        System.out.println(token);
     }
 }
