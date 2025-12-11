@@ -42,7 +42,7 @@
         <dependency>
             <groupId>io.testsmith.practicesoftwaretesting</groupId>
             <artifactId>v1-client</artifactId>
-            <version>0.0.50</version>
+            <version>0.0.66</version>
         </dependency>
         <dependency>
             <groupId>net.serenity-bdd</groupId>
